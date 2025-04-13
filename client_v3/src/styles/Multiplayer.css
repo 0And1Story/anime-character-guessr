@@ -405,4 +405,18 @@
     background: #e2e8f0;
     color: #1e293b;
   }
+}
+
+.visibility-button {
+  padding: 8px 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #fff;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.visibility-button:hover {
+  background-color: #f0f0f0;
 } 

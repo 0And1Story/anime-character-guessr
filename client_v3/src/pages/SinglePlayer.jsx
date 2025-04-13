@@ -23,6 +23,7 @@ function SinglePlayer() {
   const [helpPopup, setHelpPopup] = useState(false);
   const [currentTimeLimit, setCurrentTimeLimit] = useState(null);
   const [shouldResetTimer, setShouldResetTimer] = useState(false);
+  const [currentSubjectSearch, setCurrentSubjectSearch] = useState(true);
   const [hints, setHints] = useState({
     first: null,
     second: null
@@ -41,7 +42,8 @@ function SinglePlayer() {
     maxAttempts: 10,
     enableHints: true,
     includeGame: false,
-    timeLimit: null
+    timeLimit: null,
+    subjectSearch: true
   });
 
   // Initialize game
@@ -59,6 +61,7 @@ function SinglePlayer() {
           setAnswerCharacter(character);
           setGuessesLeft(gameSettings.maxAttempts);
           setCurrentTimeLimit(gameSettings.timeLimit);
+          setCurrentSubjectSearch(gameSettings.subjectSearch);
           // Prepare hints based on settings
           let hintTexts = ['🚫提示未启用', '🚫提示未启用'];
           if (gameSettings.enableHints && character.summary) {
@@ -223,6 +226,7 @@ function SinglePlayer() {
     setAnswerCharacter(null);
     setSettingsPopup(false);
     setCurrentTimeLimit(gameSettings.timeLimit);
+    setCurrentSubjectSearch(gameSettings.subjectSearch);
     setShouldResetTimer(false);
     setHints({
       first: null,
@@ -298,6 +302,7 @@ function SinglePlayer() {
           onCharacterSelect={handleCharacterSelect}
           isGuessing={isGuessing}
           gameEnd={gameEnd}
+          subjectSearch={currentSubjectSearch}
         />
       </div>
 

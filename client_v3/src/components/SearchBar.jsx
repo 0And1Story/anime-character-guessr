@@ -3,7 +3,7 @@ import axios from 'axios';
 import { searchSubjects, getCharactersBySubjectId, getCharacterDetails } from '../utils/anime';
 import '../styles/search.css';
 
-function SearchBar({ onCharacterSelect, isGuessing, gameEnd }) {
+function SearchBar({ onCharacterSelect, isGuessing, gameEnd, subjectSearch }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
@@ -40,6 +40,17 @@ function SearchBar({ onCharacterSelect, isGuessing, gameEnd }) {
     setSearchResults([]);
     setSelectedSubject(null);
   }, [searchQuery]);
+
+  // Force character search mode when subjectSearch is false
+  useEffect(() => {
+    if (!subjectSearch && searchMode === 'subject') {
+      setSearchMode('character');
+      setSearchResults([]);
+      setOffset(0);
+      setHasMore(true);
+      setSelectedSubject(null);
+    }
+  }, [subjectSearch]);
 
   // Debounced search function for character search only
   useEffect(() => {
@@ -280,16 +291,18 @@ function SearchBar({ onCharacterSelect, isGuessing, gameEnd }) {
         >
           {isSearching && searchMode === 'character' ? '在搜了...' : isGuessing ? '在猜了...' : '搜角色'}
         </button>
-        <button 
-          className={`search-button ${searchMode === 'subject' ? 'active' : ''}`}
-          onClick={() => {
-            setSearchMode('subject');
-            if (searchQuery.trim()) handleSubjectSearch();
-          }}
-          disabled={!searchQuery.trim() || isSearching || isGuessing || gameEnd}
-        >
-          {isSearching && searchMode === 'subject' ? '在搜了...' : '搜作品'}
-        </button>
+        {subjectSearch && (
+          <button 
+            className={`search-button ${searchMode === 'subject' ? 'active' : ''}`}
+            onClick={() => {
+              setSearchMode('subject');
+              if (searchQuery.trim()) handleSubjectSearch();
+            }}
+            disabled={!searchQuery.trim() || isSearching || isGuessing || gameEnd}
+          >
+            {isSearching && searchMode === 'subject' ? '在搜了...' : '搜作品'}
+          </button>
+        )}
       </div>
     </div>
   );

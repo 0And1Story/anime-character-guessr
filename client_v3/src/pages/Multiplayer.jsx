@@ -26,6 +26,7 @@ const Multiplayer = () => {
   const [socket, setSocket] = useState(null);
   const [error, setError] = useState('');
   const [showSettings, setShowSettings] = useState(false);
+  const [isPublic, setIsPublic] = useState(true);
   const [gameSettings, setGameSettings] = useState({
     subjectType: [2],
     startYear: new Date().getFullYear()-5,
@@ -40,7 +41,8 @@ const Multiplayer = () => {
     maxAttempts: 10,
     enableHints: true,
     includeGame: false,
-    timeLimit: 60
+    timeLimit: 60,
+    subjectSearch: true
   });
 
   // Game state
@@ -61,6 +63,7 @@ const Multiplayer = () => {
   const [globalGameEnd, setGlobalGameEnd] = useState(false);
   const [guessesHistory, setGuessesHistory] = useState([]);
   const [showNames, setShowNames] = useState(true);
+  const [currentSubjectSearch, setCurrentSubjectSearch] = useState(true);
 
   useEffect(() => {
     // Initialize socket connection
@@ -68,8 +71,11 @@ const Multiplayer = () => {
     setSocket(newSocket);
 
     // Socket event listeners
-    newSocket.on('updatePlayers', ({ players }) => {
+    newSocket.on('updatePlayers', ({ players, isPublic }) => {
       setPlayers(players);
+      if (isPublic !== undefined) {
+        setIsPublic(isPublic);
+      }
     });
 
     newSocket.on('roomClosed', ({ message }) => {
@@ -89,20 +95,24 @@ const Multiplayer = () => {
       setGameSettings(settings);
     });
 
-    newSocket.on('gameStart', ({ character, settings, players }) => {
+    newSocket.on('gameStart', ({ character, settings, players, isPublic }) => {
       gameEndedRef.current = false;
       const decryptedCharacter = JSON.parse(CryptoJS.AES.decrypt(character, secret).toString(CryptoJS.enc.Utf8));
       setAnswerCharacter(decryptedCharacter);
       setGameSettings(settings);
       setGuessesLeft(settings.maxAttempts);
+      setCurrentSubjectSearch(settings.subjectSearch);
       if (players) {
         setPlayers(players);
+      }
+      if (isPublic !== undefined) {
+        setIsPublic(isPublic);
       }
       
       // Prepare hints if enabled
       let hintTexts = ['🚫提示未启用', '🚫提示未启用'];
       if (settings.enableHints && decryptedCharacter.summary) {
-        const sentences = decryptedCharacter.summary.split(/[。、，。！？ “”]/).filter(s => s.trim());
+        const sentences = decryptedCharacter.summary.split(/[。、，。！？ ""]/).filter(s => s.trim());
         if (sentences.length > 0) {
           const selectedIndices = new Set();
           while (selectedIndices.size < Math.min(2, sentences.length)) {
@@ -373,11 +383,12 @@ const Multiplayer = () => {
         // Update local state
         setAnswerCharacter(character);
         setGuessesLeft(gameSettings.maxAttempts);
+        setCurrentSubjectSearch(gameSettings.subjectSearch);
         
         // Prepare hints if enabled
         let hintTexts = ['🚫提示未启用', '🚫提示未启用'];
         if (gameSettings.enableHints && character.summary) {
-          const sentences = character.summary.split(/[。、，。！？ “”]/).filter(s => s.trim());
+          const sentences = character.summary.split(/[。、，。！？ ""]/).filter(s => s.trim());
           if (sentences.length > 0) {
             const selectedIndices = new Set();
             while (selectedIndices.size < Math.min(2, sentences.length)) {
@@ -410,6 +421,10 @@ const Multiplayer = () => {
       default:
         return '❓';
     }
+  };
+
+  const handleVisibilityToggle = () => {
+    socket.emit('toggleRoomVisibility', { roomId });
   };
 
   if (!roomId) {
@@ -463,6 +478,12 @@ const Multiplayer = () => {
                 <div className="host-game-controls">
                   <div className="button-group">
                     <button 
+                      onClick={handleVisibilityToggle}
+                      className="visibility-button"
+                    >
+                      {isPublic ? '🔓公开' : '🔒私密'}
+                    </button>
+                    <button 
                       onClick={() => setShowSettings(true)} 
                       className="settings-button"
                     >
@@ -496,6 +517,7 @@ const Multiplayer = () => {
                 onCharacterSelect={handleCharacterSelect}
                 isGuessing={isGuessing}
                 gameEnd={gameEnd}
+                subjectSearch={gameSettings.subjectSearch}
               />
               {gameSettings.timeLimit && !gameEnd && (
                 <Timer
@@ -526,19 +548,27 @@ const Multiplayer = () => {
             <div className="container">
               {isHost && (
                 <div className="host-game-controls">
-                  <button 
-                    onClick={() => setShowSettings(true)} 
-                    className="settings-button"
-                  >
-                    设置
-                  </button>
-                  <button 
-                    onClick={handleStartGame}
-                    className="start-game-button" 
-                    disabled={players.length < 2 || players.some(p => !p.isHost && !p.ready && !p.disconnected)}
-                  >
-                    开始
-                  </button>
+                  <div className="button-group">
+                    <button 
+                      onClick={handleVisibilityToggle}
+                      className="visibility-button"
+                    >
+                      {isPublic ? '🔓公开' : '🔒私密'}
+                    </button>
+                    <button 
+                      onClick={() => setShowSettings(true)} 
+                      className="settings-button"
+                    >
+                      设置
+                    </button>
+                    <button 
+                      onClick={handleStartGame}
+                      className="start-game-button" 
+                      disabled={players.length < 2 || players.some(p => !p.isHost && !p.ready && !p.disconnected)}
+                    >
+                      开始
+                    </button>
+                  </div>
                 </div>
               )}
               <div className="game-end-message">

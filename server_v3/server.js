@@ -48,6 +48,7 @@ io.on('connection', (socket) => {
 
     rooms.set(roomId, {
       host: socket.id,
+      isPublic: true, // Default to public
       players: [{
         id: socket.id,
         username,
@@ -63,7 +64,8 @@ io.on('connection', (socket) => {
     
     // Send room data back to host
     io.to(roomId).emit('updatePlayers', {
-      players: rooms.get(roomId).players
+      players: rooms.get(roomId).players,
+      isPublic: rooms.get(roomId).isPublic
     });
 
     console.log(`Room ${roomId} created by ${username}`);
@@ -81,6 +83,12 @@ io.on('connection', (socket) => {
     
     if (!room) {
       socket.emit('error', { message: 'Room not found' });
+      return;
+    }
+
+    // Check if room is private
+    if (!room.isPublic) {
+      socket.emit('error', { message: '房间已锁定，无法加入' });
       return;
     }
 
@@ -115,7 +123,8 @@ io.on('connection', (socket) => {
 
     // Send updated player list to all clients in room
     io.to(roomId).emit('updatePlayers', {
-      players: room.players
+      players: room.players,
+      isPublic: room.isPublic
     });
 
     console.log(`${username} joined room ${roomId}`);
@@ -189,6 +198,9 @@ io.on('connection', (socket) => {
       return;
     }
 
+    // Set room to private when game starts
+    room.isPublic = false;
+
     // Only allow host to start game
     const player = room.players.find(p => p.id === socket.id);
     if (!player || !player.isHost) {
@@ -224,7 +236,8 @@ io.on('connection', (socket) => {
     io.to(roomId).emit('gameStart', { 
       character,
       settings,
-      players: room.players
+      players: room.players,
+      isPublic: false
     });
     
     console.log(`Game started in room ${roomId}`);
@@ -402,6 +415,34 @@ io.on('connection', (socket) => {
     }
     
     console.log(`User ${socket.id} disconnected`); // General disconnect log
+  });
+
+  // Handle room visibility toggle
+  socket.on('toggleRoomVisibility', ({ roomId }) => {
+    const room = rooms.get(roomId);
+    
+    if (!room) {
+      socket.emit('error', { message: 'Room not found' });
+      return;
+    }
+
+    // Only allow host to toggle visibility
+    const player = room.players.find(p => p.id === socket.id);
+    if (!player || !player.isHost) {
+      socket.emit('error', { message: '只有房主可以更改房间状态' });
+      return;
+    }
+
+    // Toggle visibility
+    room.isPublic = !room.isPublic;
+
+    // Notify all players in the room about the update
+    io.to(roomId).emit('updatePlayers', {
+      players: room.players,
+      isPublic: room.isPublic
+    });
+
+    console.log(`Room ${roomId} visibility changed to ${room.isPublic ? 'public' : 'private'}`);
   });
 });
 
