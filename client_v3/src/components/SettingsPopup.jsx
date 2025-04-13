@@ -341,7 +341,6 @@ function SettingsPopup({ gameSettings, onSettingsChange, onClose, onRestart, hid
                       <option value="OVA">OVA</option>
                       <option value="剧场版">剧场版</option>
                       <option value="动态漫画">动态漫画</option>
-                      <option value="Galgame">Galgame</option>
                       <option value="其他">其他</option>
                     </select>
                   </div>
