@@ -1,7 +1,15 @@
 import React, { useState } from 'react';
 
-const PlayerList = ({ players, socket, isGameStarted, handleReadyToggle }) => {
+const PlayerList = ({ players, socket, isGameStarted, handleReadyToggle, onAnonymousModeChange }) => {
   const [showNames, setShowNames] = useState(true);
+
+  const handleShowNamesToggle = () => {
+    const newShowNames = !showNames;
+    setShowNames(newShowNames);
+    if (onAnonymousModeChange) {
+      onAnonymousModeChange(newShowNames);
+    }
+  };
 
   return (
     <div className="players-list">
@@ -11,7 +19,7 @@ const PlayerList = ({ players, socket, isGameStarted, handleReadyToggle }) => {
             <th></th>
             <th>
               <button 
-                onClick={() => setShowNames(!showNames)} 
+                onClick={handleShowNamesToggle} 
                 style={{ 
                   background: 'none', 
                   border: 'none', 

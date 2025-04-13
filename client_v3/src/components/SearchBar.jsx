@@ -167,30 +167,34 @@ function SearchBar({ onCharacterSelect, isGuessing, gameEnd }) {
     if (searchMode === 'subject' && !selectedSubject) {
       return (
         <div className="search-dropdown">
-          {searchResults.map((subject) => (
-            <div
-              key={subject.id}
-              className="search-result-item"
-              onClick={() => handleSubjectSelect(subject)}
-            >
-              {subject.image ? (
-                <img 
-                  src={subject.image} 
-                  alt={subject.name} 
-                  className="result-character-icon"
-                />
-              ) : (
-                <div className="result-character-icon no-image">
-                  无图片
+          {isSearching ? (
+            <div className="search-loading">搜索中...</div>
+          ) : (
+            searchResults.map((subject) => (
+              <div
+                key={subject.id}
+                className="search-result-item"
+                onClick={() => handleSubjectSelect(subject)}
+              >
+                {subject.image ? (
+                  <img 
+                    src={subject.image} 
+                    alt={subject.name} 
+                    className="result-character-icon"
+                  />
+                ) : (
+                  <div className="result-character-icon no-image">
+                    无图片
+                  </div>
+                )}
+                <div className="result-character-info">
+                  <div className="result-character-name">{subject.name}</div>
+                  <div className="result-character-name-cn">{subject.name_cn}</div>
+                  <div className="result-subject-type">{subject.type}</div>
                 </div>
-              )}
-              <div className="result-character-info">
-                <div className="result-character-name">{subject.name}</div>
-                <div className="result-character-name-cn">{subject.name_cn}</div>
-                <div className="result-subject-type">{subject.type}</div>
               </div>
-            </div>
-          ))}
+            ))
+          )}
         </div>
       );
     }
@@ -211,36 +215,42 @@ function SearchBar({ onCharacterSelect, isGuessing, gameEnd }) {
             </button>
           </div>
         )}
-        {searchResults.map((character) => (
-          <div
-            key={character.id}
-            className="search-result-item"
-            onClick={() => handleCharacterSelect(character)}
-          >
-            {character.image ? (
-              <img 
-                src={character.image} 
-                alt={character.name} 
-                className="result-character-icon"
-              />
-            ) : (
-              <div className="result-character-icon no-image">
-                无图片
+        {isSearching ? (
+          <div className="search-loading">加载角色中...</div>
+        ) : (
+          <>
+            {searchResults.map((character) => (
+              <div
+                key={character.id}
+                className="search-result-item"
+                onClick={() => handleCharacterSelect(character)}
+              >
+                {character.image ? (
+                  <img 
+                    src={character.image} 
+                    alt={character.name} 
+                    className="result-character-icon"
+                  />
+                ) : (
+                  <div className="result-character-icon no-image">
+                    无图片
+                  </div>
+                )}
+                <div className="result-character-info">
+                  <div className="result-character-name">{character.name}</div>
+                  <div className="result-character-name-cn">{character.nameCn}</div>
+                </div>
+              </div>
+            ))}
+            {hasMore && searchMode === 'character' && (
+              <div 
+                className="search-result-item load-more"
+                onClick={handleLoadMore}
+              >
+                {isLoadingMore ? '加载中...' : '更多'}
               </div>
             )}
-            <div className="result-character-info">
-              <div className="result-character-name">{character.name}</div>
-              <div className="result-character-name-cn">{character.nameCn}</div>
-            </div>
-          </div>
-        ))}
-        {hasMore && searchMode === 'character' && (
-          <div 
-            className="search-result-item load-more"
-            onClick={handleLoadMore}
-          >
-            {isLoadingMore ? '加载中...' : '更多'}
-          </div>
+          </>
         )}
       </div>
     );

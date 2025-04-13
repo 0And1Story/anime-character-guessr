@@ -8,7 +8,6 @@ const app = express();
 const server = http.createServer(app);
 const PORT = process.env.PORT || 3000;
 // const secret = "my-secret-key";
-let visitCount = 0;
 const cors_options = {
     origin: [
         'http://localhost:5173',
@@ -32,7 +31,6 @@ const rooms = new Map();
 
 // Socket.IO connection handling
 io.on('connection', (socket) => {
-  visitCount++;
   console.log('A user connected');
 
   // Handle room creation
@@ -418,8 +416,7 @@ server.listen(PORT, () => {
 });
 
 app.get('/', (req, res) => {
-  visitCount++;
-  res.send(`Hello from the server! Visitor count: ${visitCount}`);
+  res.send(`Hello from the server!`);
 });
 
 app.get('/room-count', (req, res) => {
