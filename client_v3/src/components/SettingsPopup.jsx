@@ -133,10 +133,11 @@ function SettingsPopup({ gameSettings, onSettingsChange, onClose, onRestart, hid
                 <button 
                   className="preset-button"
                   onClick={async () => {
+                    onSettingsChange('subjectType', [2]);
                     onSettingsChange('startYear', new Date().getFullYear()-5);
                     onSettingsChange('endYear', new Date().getFullYear());
                     onSettingsChange('topNSubjects', 20);
-                    onSettingsChange('metaTags', ["", "", ""]);
+                    onSettingsChange('metaTags', ["", "", "", "", "", ""]);
                     onSettingsChange('useIndex', false);
                     onSettingsChange('addedSubjects', []);
                     onSettingsChange('mainCharacterOnly', true);
@@ -152,10 +153,11 @@ function SettingsPopup({ gameSettings, onSettingsChange, onClose, onRestart, hid
                 <button 
                   className="preset-button"
                   onClick={async () => {
+                    onSettingsChange('subjectType', [2]);
                     onSettingsChange('startYear', new Date().getFullYear()-10);
                     onSettingsChange('endYear', new Date().getFullYear());
                     onSettingsChange('topNSubjects', 50);
-                    onSettingsChange('metaTags', ["", "", ""]);
+                    onSettingsChange('metaTags', ["", "", "", "", "", ""]);
                     onSettingsChange('useIndex', false);
                     onSettingsChange('addedSubjects', []);
                     onSettingsChange('mainCharacterOnly', false);
@@ -171,10 +173,11 @@ function SettingsPopup({ gameSettings, onSettingsChange, onClose, onRestart, hid
                 <button 
                   className="preset-button"
                   onClick={async () => {
+                    onSettingsChange('subjectType', [2]);
                     onSettingsChange('startYear', 2005);
                     onSettingsChange('endYear', new Date().getFullYear());
                     onSettingsChange('topNSubjects', 75);
-                    onSettingsChange('metaTags', ["", "", ""]);
+                    onSettingsChange('metaTags', ["", "", "", "", "", ""]);
                     onSettingsChange('addedSubjects', []);
                     onSettingsChange('mainCharacterOnly', true);
                     onSettingsChange('characterNum', 10);
@@ -190,10 +193,11 @@ function SettingsPopup({ gameSettings, onSettingsChange, onClose, onRestart, hid
                   className="preset-button"
                   onClick={async () => {
                     alert('😅');
+                    onSettingsChange('subjectType', [2]);
                     onSettingsChange('startYear', new Date().getFullYear()-10);
                     onSettingsChange('endYear', new Date().getFullYear());
                     onSettingsChange('topNSubjects', 50);
-                    onSettingsChange('metaTags', ["", "", ""]);
+                    onSettingsChange('metaTags', ["", "", "", "", "", ""]);
                     onSettingsChange('addedSubjects', []);
                     onSettingsChange('mainCharacterOnly', true);
                     onSettingsChange('characterNum', 6);
@@ -209,10 +213,11 @@ function SettingsPopup({ gameSettings, onSettingsChange, onClose, onRestart, hid
                   className="preset-button"
                   onClick={async () => {
                     alert('那很有生活了😅');
+                    onSettingsChange('subjectType', [2, 4]);
                     onSettingsChange('startYear', new Date().getFullYear()-10);
                     onSettingsChange('endYear', new Date().getFullYear());
                     onSettingsChange('topNSubjects', 50);
-                    onSettingsChange('metaTags', ["", "", ""]);
+                    onSettingsChange('metaTags', ["", "", "", "", "", ""]);
                     onSettingsChange('addedSubjects', []);
                     onSettingsChange('mainCharacterOnly', false);
                     onSettingsChange('characterNum', 10);
@@ -224,6 +229,26 @@ function SettingsPopup({ gameSettings, onSettingsChange, onClose, onRestart, hid
                 >
                   二游高手
                 </button>
+                <button 
+                  className="preset-button"
+                  onClick={async () => {
+                    alert('Ciallo～(∠・ω< )⌒☆')
+                    onSettingsChange('subjectType', [4]);
+                    onSettingsChange('startYear', new Date().getFullYear()-20);
+                    onSettingsChange('endYear', new Date().getFullYear());
+                    onSettingsChange('topNSubjects', 50);
+                    onSettingsChange('metaTags', ["", "", "", "Galgame", "", ""]);
+                    onSettingsChange('useIndex', false);
+                    onSettingsChange('addedSubjects', []);
+                    onSettingsChange('mainCharacterOnly', true);
+                    onSettingsChange('maxAttempts', 10);
+                    await setIndex("");
+                    onSettingsChange('enableHints', true);
+                    onSettingsChange('includeGame', false);
+                  }}
+                >
+                  旮旯高手
+                </button>
                 
               </div>
             </div>
@@ -233,7 +258,27 @@ function SettingsPopup({ gameSettings, onSettingsChange, onClose, onRestart, hid
               
               <div className="settings-subsection">
                 <div className="settings-row">
-                  <label>关联游戏条目：</label>
+                  <label>条目类型限制：</label>
+                  <select 
+                    className="settings-select"
+                    value={JSON.stringify(gameSettings.subjectType)}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      const newSubjectType = JSON.parse(value);
+                      onSettingsChange('subjectType', newSubjectType);
+                    }}
+                    // disabled={gameSettings.useIndex}
+                  >
+                    <option value="[2,4]">全部</option>
+                    <option value="[2]">仅动画</option>
+                    <option value="[4]">仅游戏</option>
+                  </select>
+                </div>
+              </div>
+              
+              <div className="settings-subsection">
+                <div className="settings-row">
+                  <label>关联所有条目：</label>
                   <input 
                     type="checkbox"
                     checked={gameSettings.includeGame}
@@ -244,9 +289,7 @@ function SettingsPopup({ gameSettings, onSettingsChange, onClose, onRestart, hid
                   <span className="tooltip-trigger">
                     ?
                     <span className="tooltip-text">
-                      计算登场作品（年份、分数）时会包括游戏。<br/>
-                      但是，答案角色还是只会从动画中选取，因为游戏的热度榜有bug。<br/>
-                      如果想要猜游戏角色，可以自创一个目录或者添加额外作品。
+                      计算登场作品（年份、分数）时会包括游戏和动画。
                     </span>
                   </span>
                 </div>
@@ -276,6 +319,8 @@ function SettingsPopup({ gameSettings, onSettingsChange, onClose, onRestart, hid
                     disabled={gameSettings.useIndex}
                   />
                 </div>
+                {gameSettings.subjectType.indexOf(2) !== -1 && (<>
+                <h4>动画</h4>
                 <div className="filter-row">
                   <div className="filter-item">
                     <label>分类：</label>
@@ -296,6 +341,7 @@ function SettingsPopup({ gameSettings, onSettingsChange, onClose, onRestart, hid
                       <option value="OVA">OVA</option>
                       <option value="剧场版">剧场版</option>
                       <option value="动态漫画">动态漫画</option>
+                      <option value="Galgame">Galgame</option>
                       <option value="其他">其他</option>
                     </select>
                   </div>
@@ -370,7 +416,100 @@ function SettingsPopup({ gameSettings, onSettingsChange, onClose, onRestart, hid
                       当“使用目录”生效时，这行选项不会影响正确答案的抽取，只会影响表格内显示的信息。
                     </span>
                   </span>
-                </div>
+                </div></>)}
+                {gameSettings.subjectType.indexOf(4) !== -1 && (<>
+                <h4>游戏</h4>
+                <div className="filter-row">
+                  <div className="filter-item">
+                    <label>分类：</label>
+                    <select 
+                      className="settings-select"
+                      value={gameSettings.metaTags[3] || ''}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        const newMetaTags = [...gameSettings.metaTags];
+                        newMetaTags[3] = value;
+                        onSettingsChange('metaTags', newMetaTags);
+                      }}
+                      // disabled={gameSettings.useIndex}
+                    >
+                      <option value="">全部</option>
+                      <option value="Galgame">Galgame</option>
+                      <option value="其他">其他</option>
+                    </select>
+                  </div>
+                  <div className="filter-item">
+                    <label>来源：</label>
+                    <select 
+                      className="settings-select"
+                      value={gameSettings.metaTags[4] || ''}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        const newMetaTags = [...gameSettings.metaTags];
+                        newMetaTags[4] = value;
+                        onSettingsChange('metaTags', newMetaTags);
+                      }}
+                      disabled={true}
+                    >
+                      <option value="">全部</option>
+                      <option value="原创">原创</option>
+                      <option value="漫画改">漫画改</option>
+                      <option value="游戏改">游戏改</option>
+                      <option value="小说改">小说改</option>
+                    </select>
+                  </div>
+                  <div className="filter-item">
+                    <label>类型：</label>
+                    <select 
+                      className="settings-select"
+                      value={gameSettings.metaTags[5] || ''}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        const newMetaTags = [...gameSettings.metaTags];
+                        newMetaTags[5] = value;
+                        onSettingsChange('metaTags', newMetaTags);
+                      }}
+                      // disabled={gameSettings.useIndex}
+                    >
+                      <option value="">全部</option>
+                      <option value="科幻">科幻</option>
+                      <option value="喜剧">喜剧</option>
+                      <option value="百合">百合</option>
+                      <option value="校园">校园</option>
+                      <option value="惊悚">惊悚</option>
+                      <option value="后宫">后宫</option>
+                      <option value="机战">机战</option>
+                      <option value="悬疑">悬疑</option>
+                      <option value="恋爱">恋爱</option>
+                      <option value="奇幻">奇幻</option>
+                      <option value="推理">推理</option>
+                      <option value="运动">运动</option>
+                      <option value="耽美">耽美</option>
+                      <option value="音乐">音乐</option>
+                      <option value="战斗">战斗</option>
+                      <option value="冒险">冒险</option>
+                      <option value="萌系">萌系</option>
+                      <option value="穿越">穿越</option>
+                      <option value="玄幻">玄幻</option>
+                      <option value="乙女">乙女</option>
+                      <option value="恐怖">恐怖</option>
+                      <option value="历史">历史</option>
+                      <option value="日常">日常</option>
+                      <option value="剧情">剧情</option>
+                      <option value="武侠">武侠</option>
+                      <option value="美食">美食</option>
+                      <option value="职场">职场</option>
+                    </select>
+                  </div>
+                  <span className="tooltip-trigger">
+                    ?
+                    <span className="tooltip-text">
+                      这行选项同时会影响登场作品的信息<br/>
+                      比如不想让剧场版计入登场数据，可以只勾选“TV”。<br/>
+                      当“使用目录”生效时，这行选项不会影响正确答案的抽取，只会影响表格内显示的信息。
+                    </span>
+                  </span>
+                </div></>)}
                 <div className="settings-row">
                   <label>热度排行榜前</label>
                   <input 
@@ -395,7 +534,7 @@ function SettingsPopup({ gameSettings, onSettingsChange, onClose, onRestart, hid
                       onSettingsChange('useIndex', e.target.checked);
                       if (!e.target.checked) {
                         // Reset when disabling index
-                        onSettingsChange('metaTags', ["", "", ""]);
+                        onSettingsChange('metaTags', ["", "", "", "", "", ""]);
                         onSettingsChange('addedSubjects', []);
                         onSettingsChange('indexId', null);
                         setIndexInfo(null);

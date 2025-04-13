@@ -84,7 +84,7 @@ async function getCharacterAppearances(characterId, gameSettings) {
     } else {
       filteredAppearances = subjectsResponse.data.filter(appearance => 
         (appearance.staff === '主角' || appearance.staff === '配角')
-        && (appearance.type === 2)
+        && (appearance.type === gameSettings.subjectType[0])
       );
     }
     
@@ -276,15 +276,18 @@ async function getRandomCharacter(gameSettings) {
         subject = gameSettings.addedSubjects[randomOffset];
       } else {
         // Fetch one subject at the random offset
+        const validMetaTags = []
+        if (gameSettings.subjectType.indexOf(2) !== -1) validMetaTags.push(...gameSettings.metaTags.slice(0, 3));
+        if (gameSettings.subjectType.indexOf(4) !== -1) validMetaTags.push(...gameSettings.metaTags.slice(3, 6));
         const response = await axios.post(`${API_BASE_URL}/v0/search/subjects?limit=1&offset=${randomOffset}`, {
           "sort": "heat",
           "filter": {
-            "type": [2],
+            "type": gameSettings.subjectType,
             "air_date": [
               `>=${gameSettings.startYear}-01-01`,
               `<${minDate}`
             ],
-            "meta_tags": gameSettings.metaTags.filter(tag => tag !== "")
+            "meta_tags": validMetaTags.filter(tag => tag !== "")
           }
         });
 

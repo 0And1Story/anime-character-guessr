@@ -27,10 +27,11 @@ const Multiplayer = () => {
   const [error, setError] = useState('');
   const [showSettings, setShowSettings] = useState(false);
   const [gameSettings, setGameSettings] = useState({
+    subjectType: [2],
     startYear: new Date().getFullYear()-5,
     endYear: new Date().getFullYear(),
     topNSubjects: 20,
-    metaTags: ["", "", ""],
+    metaTags: ["", "", "", "", "", ""],
     useIndex: false,
     indexId: null,
     addedSubjects: [],

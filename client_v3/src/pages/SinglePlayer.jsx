@@ -28,10 +28,11 @@ function SinglePlayer() {
     second: null
   });
   const [gameSettings, setGameSettings] = useState({
+    subjectType: [2],
     startYear: new Date().getFullYear()-10,
     endYear: new Date().getFullYear(),
     topNSubjects: 50,
-    metaTags: ["", "", ""],
+    metaTags: ["", "", "", "", "", ""],
     useIndex: false,
     indexId: null,
     addedSubjects: [],
@@ -231,6 +232,7 @@ function SinglePlayer() {
     const initializeNewGame = async () => {
       try {
         const character = await getRandomCharacter(gameSettings);
+        // console.log(character);
         setAnswerCharacter(character);
         // Prepare hints based on settings for new game
         let hintTexts = ['🚫提示未启用', '🚫提示未启用'];
