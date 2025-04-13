@@ -15,7 +15,7 @@ function HelpPopup({ onClose }) {
               每次猜测后，你会获得你猜的角色的信息。<br/>
               绿色高亮：正确或非常接近；黄色高亮：有点接近。<br/>
               <br/>
-              有bug或者建议？欢迎B站私信我。<br/>
+              有bug或者建议？欢迎B站私信我。
             </div>
           </div>
         </div>

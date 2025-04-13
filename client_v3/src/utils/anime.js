@@ -30,7 +30,6 @@ async function getSubjectDetails(subjectId) {
     if (!response.data) {
       throw new Error('No subject details found');
     }
-
     // Get air date and current date
     const airDate = response.data.date;
     const currentDate = new Date();
@@ -57,19 +56,19 @@ async function getSubjectDetails(subjectId) {
     //   meta_tags.push(studioTrim);
     // }
 
-    const meta_tags = new Set();
-    response.data.meta_tags.filter(tag => !tag.includes('20')).forEach(tag => meta_tags.add(tag));
+    const tags = new Set();
     if (response.data.type === 2) {
-      response.data.tags.slice(0, 10).filter(tag => !tag.name.includes('20')).forEach(tag => meta_tags.add(tag.name));
+      response.data.tags.slice(0, 10).filter(tag => !tag.name.includes('20')).forEach(tag => tags.add(tag.name));
     }
     if (response.data.type === 4) {
-      response.data.tags.slice(0, 5).filter(tag => !tag.name.includes('20')).forEach(tag => meta_tags.add(tag.name));
+      response.data.tags.slice(0, 5).filter(tag => !tag.name.includes('20')).forEach(tag => tags.add(tag.name));
     }
 
     return {
       name: response.data.name_cn || response.data.name,
       year,
-      meta_tags: Array.from(meta_tags),
+      meta_tags: response.data.meta_tags,
+      tags: Array.from(tags),
       rating: response.data.rating?.score || 0,
       rating_count: response.data.rating?.total || 0
     };
@@ -123,7 +122,8 @@ async function getCharacterAppearances(characterId, gameSettings) {
     let earliestAppearance = -1;
     let highestRating = -1;
     let highestRatingCount = -1;
-    let highestRatingCountMetaTags = [];
+    let highestRatingCountTags = [];
+    const allMetaTags = new Set();
 
     // Get just the names and collect meta tags
     const appearances = await Promise.all(
@@ -133,9 +133,7 @@ async function getCharacterAppearances(characterId, gameSettings) {
 
           if (!details || details.year === null) return null;
 
-          if (!gameSettings.metaTags.filter(tag => tag !== '').every(tag => details.meta_tags.includes(tag))) {
-            return null;
-          }
+          if (!gameSettings.metaTags.filter(tag => tag !== '').every(tag => allMetaTags.has(tag))) return null;
 
           if (latestAppearance === -1 || details.year > latestAppearance) {
             latestAppearance = details.year;
@@ -149,8 +147,10 @@ async function getCharacterAppearances(characterId, gameSettings) {
           // Update meta tags only if this has the highest rating_count
           if (details.rating_count > highestRatingCount) {
             highestRatingCount = details.rating_count;
-            highestRatingCountMetaTags = details.meta_tags;
+            highestRatingCountTags = details.tags;
           }
+          // Add each meta tag individually to the Set
+          details.meta_tags.forEach(tag => allMetaTags.add(tag));
           return {
             name: details.name,
             rating_count: details.rating_count
@@ -161,13 +161,12 @@ async function getCharacterAppearances(characterId, gameSettings) {
         }
       })
     );
+    highestRatingCountTags.forEach(tag => allMetaTags.add(tag));
 
     const validAppearances = appearances
       .filter(appearance => appearance !== null)
       .sort((a, b) => b.rating_count - a.rating_count)
       .map(appearance => appearance.name);
-    // Create a new Set with the meta tags from highest rating_count appearance
-    const allMetaTags = new Set(highestRatingCountMetaTags);
 
     if (characterId === 56822 || characterId === 56823 || characterId === 17529 || characterId === 10956) {
       personsResponse.data = [];
@@ -181,7 +180,6 @@ async function getCharacterAppearances(characterId, gameSettings) {
         });
       }
     }
-
     return {
       appearances: validAppearances,
       latestAppearance,
