@@ -422,9 +422,10 @@ function generateFeedback(guess, answerCharacter) {
     feedback: appearancesFeedback
   };
 
-  const sharedMetaTags = guess.metaTags.filter(tag =>
-    answerCharacter.metaTags.includes(tag)
-  );
+  // Advice from EST-NINE
+  const answerMetaTagsSet = new Set(answerCharacter.metaTags);
+  const sharedMetaTags = guess.metaTags.filter(tag => answerMetaTagsSet.has(tag));
+
   result.metaTags = {
     guess: guess.metaTags,
     shared: sharedMetaTags
