@@ -13,14 +13,14 @@ async function getSubjectDetails(subjectId) {
     // Get air date and current date
     const airDate = response.data.date;
     const currentDate = new Date();
-    
+
     // If air date is in the future, return null to indicate this show should be ignored
     if (airDate && new Date(airDate) > currentDate) {
       return null;
     }
 
     let year = airDate ? parseInt(airDate.split('-')[0]) : null;
-    
+
     // // Extract meta tags and add animation studios
     // const meta_tags = response.data.meta_tags || [];
     // const animationStudio = response.data.infobox?.find(item => item.key === '动画制作')?.value;
@@ -77,17 +77,17 @@ async function getCharacterAppearances(characterId, gameSettings) {
 
     let filteredAppearances;
     if (gameSettings.includeGame) {
-      filteredAppearances = subjectsResponse.data.filter(appearance => 
+      filteredAppearances = subjectsResponse.data.filter(appearance =>
         (appearance.staff === '主角' || appearance.staff === '配角')
         && (appearance.type === 2 || appearance.type === 4)
       );
     } else {
-      filteredAppearances = subjectsResponse.data.filter(appearance => 
+      filteredAppearances = subjectsResponse.data.filter(appearance =>
         (appearance.staff === '主角' || appearance.staff === '配角')
         && (appearance.type === gameSettings.subjectType[0])
       );
     }
-    
+
     if (filteredAppearances.length === 0) {
       return {
         appearances: [],
@@ -109,12 +109,13 @@ async function getCharacterAppearances(characterId, gameSettings) {
       filteredAppearances.map(async appearance => {
         try {
           const details = await getSubjectDetails(appearance.id);
-          
+
           if (!details || details.year === null) return null;
 
-          const allMetaTags = new Set(details.meta_tags);
-          if (!gameSettings.metaTags.filter(tag => tag !== '').every(tag => allMetaTags.has(tag))) return null;
-          
+          if (!gameSettings.metaTags.filter(tag => tag !== '').every(tag => details.meta_tags.includes(tag))) {
+            return null;
+          }
+
           if (latestAppearance === -1 || details.year > latestAppearance) {
             latestAppearance = details.year;
           }
@@ -139,7 +140,7 @@ async function getCharacterAppearances(characterId, gameSettings) {
         }
       })
     );
-    
+
     const validAppearances = appearances
       .filter(appearance => appearance !== null)
       .sort((a, b) => b.rating_count - a.rating_count)
@@ -150,7 +151,7 @@ async function getCharacterAppearances(characterId, gameSettings) {
     if (characterId === 56822 || characterId === 56823 || characterId === 17529 || characterId === 10956) {
       personsResponse.data = [];
       allMetaTags.add('展开');
-    } 
+    }
     else if (personsResponse.data && personsResponse.data.length) {
       const animeVAs = personsResponse.data.filter(person => person.subject_type === 2 || person.subject_type === 4);
       if (animeVAs.length > 0) {
@@ -191,9 +192,9 @@ async function getCharacterDetails(characterId) {
     const nameCn = response.data.infobox?.find(item => item.key === '简体中文名')?.value || null;
 
     // Handle gender - only accept string values of 'male' or 'female'
-    const gender = typeof response.data.gender === 'string' && 
-      (response.data.gender === 'male' || response.data.gender === 'female') 
-      ? response.data.gender 
+    const gender = typeof response.data.gender === 'string' &&
+      (response.data.gender === 'male' || response.data.gender === 'female')
+      ? response.data.gender
       : '?';
 
     return {
@@ -217,14 +218,14 @@ async function getCharactersBySubjectId(subjectId) {
       throw new Error('No characters found for this anime');
     }
 
-    const filteredCharacters = response.data.filter(character => 
+    const filteredCharacters = response.data.filter(character =>
       character.relation === '主角' || character.relation === '配角'
     );
 
     if (filteredCharacters.length === 0) {
       throw new Error('No main or supporting characters found for this anime');
     }
-  
+
     return filteredCharacters;
   } catch (error) {
     console.error('Error fetching characters:', error);
@@ -237,13 +238,13 @@ async function getRandomCharacter(gameSettings) {
     let subject;
     let total;
     let randomOffset;
-    
+
     if (gameSettings.useIndex && gameSettings.indexId) {
       // Get index info first
       const indexInfo = await getIndexInfo(gameSettings.indexId);
       // Get total from index info
-      total = indexInfo.total + gameSettings.addedSubjects.length; 
-      
+      total = indexInfo.total + gameSettings.addedSubjects.length;
+
       // Get a random offset within the total number of subjects
       randomOffset = Math.floor(Math.random() * total);
 
@@ -264,13 +265,13 @@ async function getRandomCharacter(gameSettings) {
       }
     } else {
       gameSettings.useIndex = false;
-      total = gameSettings.topNSubjects+gameSettings.addedSubjects.length;
-      
+      total = gameSettings.topNSubjects + gameSettings.addedSubjects.length;
+
       randomOffset = Math.floor(Math.random() * total);
       const endDate = new Date(`${gameSettings.endYear + 1}-01-01`);
       const today = new Date();
       const minDate = new Date(Math.min(endDate.getTime(), today.getTime())).toISOString().split('T')[0];
-      
+
       if (randomOffset >= gameSettings.topNSubjects) {
         randomOffset = randomOffset - gameSettings.topNSubjects;
         subject = gameSettings.addedSubjects[randomOffset];
@@ -301,7 +302,7 @@ async function getRandomCharacter(gameSettings) {
 
     // Get characters for the selected subject
     const characters = await getCharactersBySubjectId(subject.id);
-    
+
     // Filter and select characters based on mainCharacterOnly setting
     const filteredCharacters = gameSettings.mainCharacterOnly
       ? characters.filter(character => character.relation === '主角')
@@ -396,7 +397,7 @@ function generateFeedback(guess, answerCharacter) {
     feedback: appearancesFeedback
   };
 
-  const sharedMetaTags = guess.metaTags.filter(tag => 
+  const sharedMetaTags = guess.metaTags.filter(tag =>
     answerCharacter.metaTags.includes(tag)
   );
   result.metaTags = {
@@ -452,7 +453,7 @@ function generateFeedback(guess, answerCharacter) {
 async function getIndexInfo(indexId) {
   try {
     const response = await axios.get(`${API_BASE_URL}/v0/indices/${indexId}`);
-    
+
     if (!response.data) {
       throw new Error('No index information found');
     }
@@ -490,7 +491,7 @@ async function searchSubjects(keyword) {
       name_cn: subject.name_cn,
       image: subject.images?.grid || subject.images?.medium || '',
       date: subject.date,
-      type: subject.type==2 ? '动漫' : '游戏'
+      type: subject.type == 2 ? '动漫' : '游戏'
     }));
   } catch (error) {
     console.error('Error searching subjects:', error);
