@@ -153,6 +153,7 @@ function SinglePlayer() {
         }]);
 
         setGameEnd(true);
+        alert('熟悉这个角色吗？欢迎贡献标签');
         setGameEndPopup({
           result: 'win',
           answer: answerCharacter
@@ -182,6 +183,7 @@ function SinglePlayer() {
         }]);
 
         setGameEnd(true);
+        alert('认识这个角色吗？欢迎贡献标签');
         setGameEndPopup({
           result: 'lose',
           answer: answerCharacter

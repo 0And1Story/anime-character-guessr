@@ -704,7 +704,7 @@ function SettingsPopup({ gameSettings, onSettingsChange, onClose, onRestart, hid
                   type="number"
                   value={gameSettings.maxAttempts || ''}
                   onChange={(e) => {
-                    const value = e.target.value === '' ? 10 : parseInt(e.target.value);
+                    const value = e.target.value === '' ? 10 : Math.max(5, Math.min(15, parseInt(e.target.value) || 5));
                     onSettingsChange('maxAttempts', value);
                   }}
                   min="5"
