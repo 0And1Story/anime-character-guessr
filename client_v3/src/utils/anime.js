@@ -1,4 +1,5 @@
 import axios from 'axios';
+import cookie from 'react-cookies';
 
 const API_BASE_URL = 'https://api.bgm.tv';
 
@@ -280,6 +281,10 @@ async function getRandomCharacter(gameSettings) {
         const validMetaTags = []
         if (gameSettings.subjectType.indexOf(2) !== -1) validMetaTags.push(...gameSettings.metaTags.slice(0, 3));
         if (gameSettings.subjectType.indexOf(4) !== -1) validMetaTags.push(...gameSettings.metaTags.slice(3, 6));
+
+        const access_token = cookie.load('access_token')
+        if (access_token) axios.defaults.headers.common['Authorization'] = `Bearer ${access_token}`
+
         const response = await axios.post(`${API_BASE_URL}/v0/search/subjects?limit=1&offset=${randomOffset}`, {
           "sort": "heat",
           "filter": {

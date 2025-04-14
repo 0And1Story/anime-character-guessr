@@ -3,21 +3,23 @@ const http = require('http');
 const { Server } = require('socket.io');
 const cors = require('cors');
 const { startSelfPing } = require('./utils/selfPing');
+const { config } = require('./config')
+const { default: axios } = require('axios');
 
 const app = express();
 const server = http.createServer(app);
 const PORT = process.env.PORT || 3000;
 // const secret = "my-secret-key";
 const cors_options = {
-    origin: [
-        'http://localhost:5173',
-        'http://localhost:5174',
-        'https://anime-character-guessr.onrender.com',
-        'https://anime-character-guessr.vercel.app',
-        'https://anime-character-guessr.netlify.app'
-      ],
-      methods: ['GET', 'POST'],
-      credentials: true
+  origin: [
+    'http://localhost:5173',
+    'http://localhost:5174',
+    'https://anime-character-guessr.onrender.com',
+    'https://anime-character-guessr.vercel.app',
+    'https://anime-character-guessr.netlify.app'
+  ],
+  methods: ['GET', 'POST'],
+  credentials: true
 }
 
 const io = new Server(server, {
@@ -40,10 +42,10 @@ io.on('connection', (socket) => {
       socket.emit('error', { message: 'Username cannot be empty' });
       return;
     }
-    
+
     if (rooms.has(roomId)) {
-        socket.emit('error', { message: 'Room already exists unexpectedly' });
-        return;
+      socket.emit('error', { message: 'Room already exists unexpectedly' });
+      return;
     }
 
     rooms.set(roomId, {
@@ -61,7 +63,7 @@ io.on('connection', (socket) => {
 
     // Join socket to room
     socket.join(roomId);
-    
+
     // Send room data back to host
     io.to(roomId).emit('updatePlayers', {
       players: rooms.get(roomId).players,
@@ -75,12 +77,12 @@ io.on('connection', (socket) => {
   socket.on('joinRoom', ({ roomId, username }) => {
     // Basic validation
     if (!username || username.trim().length === 0) {
-        socket.emit('error', { message: 'Username cannot be empty' });
-        return;
+      socket.emit('error', { message: 'Username cannot be empty' });
+      return;
     }
 
     const room = rooms.get(roomId);
-    
+
     if (!room) {
       socket.emit('error', { message: 'Room not found' });
       return;
@@ -133,7 +135,7 @@ io.on('connection', (socket) => {
   // Handle ready status toggle
   socket.on('toggleReady', ({ roomId }) => {
     const room = rooms.get(roomId);
-    
+
     if (!room) {
       socket.emit('error', { message: 'Room not found' });
       return;
@@ -141,7 +143,7 @@ io.on('connection', (socket) => {
 
     // Find the player
     const player = room.players.find(p => p.id === socket.id);
-    
+
     if (!player) {
       socket.emit('error', { message: 'Player not found in room' });
       return;
@@ -167,7 +169,7 @@ io.on('connection', (socket) => {
   // Handle game settings update
   socket.on('updateGameSettings', ({ roomId, settings }) => {
     const room = rooms.get(roomId);
-    
+
     if (!room) {
       socket.emit('error', { message: 'Room not found' });
       return;
@@ -185,14 +187,14 @@ io.on('connection', (socket) => {
 
     // Broadcast settings to all clients in the room
     io.to(roomId).emit('updateGameSettings', { settings });
-    
+
     console.log(`Game settings updated in room ${roomId}`);
   });
 
   // Handle game start
   socket.on('gameStart', ({ roomId, character, settings }) => {
     const room = rooms.get(roomId);
-    
+
     if (!room) {
       socket.emit('error', { message: 'Room not found' });
       return;
@@ -233,20 +235,20 @@ io.on('connection', (socket) => {
     });
 
     // Broadcast game start and updated players to all clients in the room in a single event
-    io.to(roomId).emit('gameStart', { 
+    io.to(roomId).emit('gameStart', {
       character,
       settings,
       players: room.players,
       isPublic: false
     });
-    
+
     console.log(`Game started in room ${roomId}`);
   });
 
   // Handle player guesses
   socket.on('playerGuess', ({ roomId, guessResult }) => {
     const room = rooms.get(roomId);
-    
+
     if (!room) {
       socket.emit('error', { message: 'Room not found' });
       return;
@@ -278,14 +280,14 @@ io.on('connection', (socket) => {
     io.to(roomId).emit('updatePlayers', {
       players: room.players
     });
-    
+
     console.log(`Player ${player.username} made a guess in room ${roomId}: ${guessResult.name} (${guessResult.isCorrect ? 'correct' : 'incorrect'})`);
   });
 
   // Handle game end
   socket.on('gameEnd', ({ roomId, result }) => {
     const room = rooms.get(roomId);
-    
+
     if (!room) {
       socket.emit('error', { message: 'Room not found' });
       return;
@@ -337,14 +339,14 @@ io.on('connection', (socket) => {
     io.to(roomId).emit('updatePlayers', {
       players: room.players
     });
-    
+
     console.log(`Player ${player.username} ended their game in room ${roomId} with result: ${result}`);
   });
 
   // Handle game settings request
   socket.on('requestGameSettings', ({ roomId }) => {
     const room = rooms.get(roomId);
-    
+
     if (!room) {
       socket.emit('error', { message: 'Room not found' });
       return;
@@ -360,7 +362,7 @@ io.on('connection', (socket) => {
   // Handle timeout event
   socket.on('timeOut', ({ roomId }) => {
     const room = rooms.get(roomId);
-    
+
     if (!room) {
       socket.emit('error', { message: 'Room not found' });
       return;
@@ -388,10 +390,10 @@ io.on('connection', (socket) => {
     // Find and remove player from their room
     for (const [roomId, room] of rooms.entries()) {
       const playerIndex = room.players.findIndex(p => p.id === socket.id);
-      
+
       if (playerIndex !== -1) {
         const disconnectedPlayer = room.players[playerIndex];
-        
+
         if (room.host === socket.id) {
           rooms.delete(roomId);
           // Notify remaining players the room is closed
@@ -413,14 +415,14 @@ io.on('connection', (socket) => {
         break; // Exit loop once player is found and handled
       }
     }
-    
+
     console.log(`User ${socket.id} disconnected`); // General disconnect log
   });
 
   // Handle room visibility toggle
   socket.on('toggleRoomVisibility', ({ roomId }) => {
     const room = rooms.get(roomId);
-    
+
     if (!room) {
       socket.emit('error', { message: 'Room not found' });
       return;
@@ -463,3 +465,39 @@ app.get('/', (req, res) => {
 app.get('/room-count', (req, res) => {
   res.json({ count: rooms.size });
 });
+
+app.get('/bangumi-authorize', async (req, res) => {
+  const code = req.query.code
+
+  if (!code) {
+    res.send('Authorization failed. No code received.')
+    return
+  }
+
+  // res.json({ code: code })
+  // return
+
+  try {
+    const response = await axios.post('https://bgm.tv/oauth/access_token', {
+      grant_type: "authorization_code",
+      client_id: config.bangumi.app_id,
+      client_secret: config.bangumi.app_secret,
+      code: code,
+      redirect_uri: config.bangumi.redirect_uri,
+    })
+
+    const data = response.data
+
+    if (!data.access_token) {
+      res.json(res.data)
+    }
+
+    const expires = Date.now() + data.expires_in * 1000
+    res.redirect(`${config.client_uri}/bangumi-authorize?access_token=${data.access_token}&expires=${expires}`)
+
+    // res.json(data)
+  } catch (err) {
+    console.error("Authorization failed. Code: " + code)
+    res.send('Authorization failed.')
+  }
+})
