@@ -67,6 +67,7 @@
 .search-button:disabled {
   background: #1e293b;
   opacity: 0.7;
+  text-wrap: nowrap;
   cursor: not-allowed;
   border-color: transparent;
   color: #fff;
