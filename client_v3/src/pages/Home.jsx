@@ -34,11 +34,8 @@ const Home = () => {
           <br/>
           灵感来源<a href="https://blast.tv/counter-strikle">BLAST.tv</a>,
           数据来源<a href="https://bgm.tv/">Bangumi</a>。<br/>
-          <a href="https://space.bilibili.com/87983557">作者</a>：“API修好了。感恩Bangumi！”
+          <a href="https://space.bilibili.com/357653742">作者</a>：“Bangumi API对访问量有限制，请大家省着点用（；´д｀）ゞ”
         </p>
-        {/* <p>
-          <a href="https://space.bilibili.com/87983557">作者</a>：实在对不起了大家，详情见……没有详情了，代码里调用的上游API挂了，所以暂时不能玩了。大伙早点休息吧。
-        </p> */}
         <p>
           “当太阳升起时，就把昨天忘掉。”
         </p>

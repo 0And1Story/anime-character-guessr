@@ -16,7 +16,6 @@ function HelpPopup({ onClose }) {
               绿色高亮：正确或非常接近；黄色高亮：有点接近。<br/>
               <br/>
               有bug或者建议？欢迎B站私信我。<br/>
-              （有人知道GitHub怎么公开仓库但不让别人发现我在更新代码吗？这对我很重要。
             </div>
           </div>
         </div>
