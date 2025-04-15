@@ -12,11 +12,8 @@ const PORT = process.env.PORT || 3000;
 // const secret = "my-secret-key";
 const cors_options = {
   origin: [
-    'http://localhost:5173',
-    'http://localhost:5174',
-    'https://anime-character-guessr.onrender.com',
-    'https://anime-character-guessr.vercel.app',
-    'https://anime-character-guessr.netlify.app'
+    config.client_uri,
+    config.server_uri,
   ],
   methods: ['GET', 'POST'],
   credentials: true
