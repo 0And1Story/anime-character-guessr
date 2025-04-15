@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import '../styles/Home.css';
+import HomeNavigator from '../components/HomeNavigator';
 
 const Home = () => {
   const [roomCount, setRoomCount] = useState(0);
@@ -15,6 +16,7 @@ const Home = () => {
 
   return (
     <div className="home-container">
+      <HomeNavigator />
       <div className="game-modes">
         <Link to="/singleplayer" className="mode-button">
           <h2>单人</h2>

@@ -1,10 +1,5 @@
 import '../styles/social.css';
 
-const bangumi_config = {
-  app_id: import.meta.env.VITE_BANGUMI_APP_ID,
-  redirect_uri: import.meta.env.VITE_BANGUMI_REDIRECT_URI,
-}
-
 function SocialLinks({ onSettingsClick, onHelpClick }) {
   return (
     <div className="social-links">
@@ -18,13 +13,13 @@ function SocialLinks({ onSettingsClick, onHelpClick }) {
       <button className="social-link help-button" onClick={onHelpClick}>
         <i className="fas fa-question-circle"></i>
       </button>
-      <a href={`https://bgm.tv/oauth/authorize?client_id=${bangumi_config.app_id}&response_type=code&redirect_uri=${bangumi_config.redirect_uri}`} rel="noopener noreferrer" className="social-link">
+      <a href="https://bgm.tv/" target="_blank" rel="noopener noreferrer" className="social-link">
         <img src="https://avatars.githubusercontent.com/u/7521082?s=200&v=4" alt="Bangumi" className="bangumi-icon" />
       </a>
-      <a href="https://github.com/kennylimz/anime-character-guessr" target="_blank" rel="noopener noreferrer" className="social-link">
+      <a href="https://github.com/0And1Story/anime-character-guessr/tree/galgame-support" target="_blank" rel="noopener noreferrer" className="social-link">
         <i className="fab fa-github"></i>
       </a>
-      <a href="https://space.bilibili.com/87983557" target="_blank" rel="noopener noreferrer" className="social-link">
+      <a href="https://space.bilibili.com/357653742" target="_blank" rel="noopener noreferrer" className="social-link">
         <i className="fa-brands fa-bilibili"></i>
       </a>
     </div>

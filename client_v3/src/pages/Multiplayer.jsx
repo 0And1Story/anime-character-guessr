@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import { io } from 'socket.io-client';
-import { getRandomCharacter, getCharacterAppearances, generateFeedback } from '../utils/anime';
+import { getRandomCharacter, getCharacterAppearances, generateFeedback, getLoginInfo, enableAuthorizedSearch } from '../utils/anime';
 import SettingsPopup from '../components/SettingsPopup';
 import SearchBar from '../components/SearchBar';
 import GuessesTable from '../components/GuessesTable';
@@ -42,7 +42,8 @@ const Multiplayer = () => {
     enableHints: true,
     includeGame: false,
     timeLimit: 60,
-    subjectSearch: true
+    subjectSearch: true,
+    enableNSFW: false,
   });
 
   // Game state
@@ -93,6 +94,14 @@ const Multiplayer = () => {
     newSocket.on('updateGameSettings', ({ settings }) => {
       console.log('Received game settings:', settings);
       setGameSettings(settings);
+
+      // Check authorization
+      if (settings.enableNSFW && !getLoginInfo()) {
+        alert("不满足房间游戏设置要求！请先登录。")
+        navigate('/')
+      }
+
+      enableAuthorizedSearch(settings.enableNSFW, getLoginInfo()?.access_token)
     });
 
     newSocket.on('gameStart', ({ character, settings, players, isPublic }) => {
@@ -184,9 +193,10 @@ const Multiplayer = () => {
       // Send initial game settings when creating room
       socket.emit('updateGameSettings', { roomId, settings: gameSettings });
     } else {
-      socket.emit('joinRoom', { roomId, username });
       // Request current settings from server
       socket.emit('requestGameSettings', { roomId });
+
+      socket.emit('joinRoom', { roomId, username });
     }
     setIsJoined(true);
   };
@@ -371,6 +381,7 @@ const Multiplayer = () => {
   const handleStartGame = async () => {
     if (isHost) {
       try {
+        enableAuthorizedSearch(gameSettings.enableNSFW, getLoginInfo()?.access_token)
         const character = await getRandomCharacter(gameSettings);
         // console.log(character);
         const encryptedCharacter = CryptoJS.AES.encrypt(JSON.stringify(character), secret).toString();
@@ -620,6 +631,7 @@ const Multiplayer = () => {
               onSettingsChange={handleSettingsChange}
               onClose={() => setShowSettings(false)}
               hideRestart={true}
+              loginInfo={getLoginInfo()}
             />
           )}
         </>

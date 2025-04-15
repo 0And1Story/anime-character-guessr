@@ -3,6 +3,26 @@ import cookie from 'react-cookies';
 
 const API_BASE_URL = 'https://api.bgm.tv';
 
+function getLoginInfo() {
+  const access_token = cookie.load('access_token')
+  const user_id = cookie.load('user_id')
+  if (access_token && user_id) {
+    return {
+      access_token: access_token,
+      user_id: user_id,
+    }
+  }
+  return null
+}
+
+function enableAuthorizedSearch(isEnable, access_token) {
+  if (isEnable && access_token) {
+    axios.defaults.headers.common['Authorization'] = `Bearer ${access_token}`
+  } else {
+    axios.defaults.headers.common['Authorization'] = null
+  }
+}
+
 async function getSubjectDetails(subjectId) {
   try {
     const response = await axios.get(`${API_BASE_URL}/v0/subjects/${subjectId}`);
@@ -282,8 +302,8 @@ async function getRandomCharacter(gameSettings) {
         if (gameSettings.subjectType.indexOf(2) !== -1) validMetaTags.push(...gameSettings.metaTags.slice(0, 3));
         if (gameSettings.subjectType.indexOf(4) !== -1) validMetaTags.push(...gameSettings.metaTags.slice(3, 6));
 
-        const access_token = cookie.load('access_token')
-        if (access_token) axios.defaults.headers.common['Authorization'] = `Bearer ${access_token}`
+        // const access_token = cookie.load('access_token')
+        // if (access_token) axios.defaults.headers.common['Authorization'] = `Bearer ${access_token}`
 
         const response = await axios.post(`${API_BASE_URL}/v0/search/subjects?limit=1&offset=${randomOffset}`, {
           "sort": "heat",
@@ -505,11 +525,13 @@ async function searchSubjects(keyword) {
 }
 
 export {
+  getLoginInfo,
   getRandomCharacter,
   getCharacterAppearances,
   getCharactersBySubjectId,
   getCharacterDetails,
   generateFeedback,
   getIndexInfo,
-  searchSubjects
+  searchSubjects,
+  enableAuthorizedSearch,
 }; 

@@ -1,8 +1,8 @@
 import '../styles/popups.css';
-import { getIndexInfo, searchSubjects } from '../utils/anime';
+import { enableAuthorizedSearch, getIndexInfo, searchSubjects } from '../utils/anime';
 import { useState, useEffect, useRef } from 'react';
 
-function SettingsPopup({ gameSettings, onSettingsChange, onClose, onRestart, hideRestart = false }) {
+function SettingsPopup({ gameSettings, onSettingsChange, onClose, onRestart, hideRestart = false, loginInfo }) {
   const [indexInputValue, setIndexInputValue] = useState('');
   const [indexInfo, setIndexInfo] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -262,22 +262,41 @@ function SettingsPopup({ gameSettings, onSettingsChange, onClose, onRestart, hid
               <h3>范围设置</h3>
               
               <div className="settings-subsection">
-                <div className="settings-row">
-                  <label>条目类型限制：</label>
-                  <select 
-                    className="settings-select"
-                    value={JSON.stringify(gameSettings.subjectType)}
-                    onChange={(e) => {
-                      const value = e.target.value;
-                      const newSubjectType = JSON.parse(value);
-                      onSettingsChange('subjectType', newSubjectType);
-                    }}
-                    // disabled={gameSettings.useIndex}
-                  >
-                    <option value="[2,4]">全部</option>
-                    <option value="[2]">仅动画</option>
-                    <option value="[4]">仅游戏</option>
-                  </select>
+                <div className="filter-row">
+                  <div className="filter-item">
+                    <label>条目类型限制：</label>
+                    <select 
+                      className="settings-select"
+                      value={JSON.stringify(gameSettings.subjectType)}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        const newSubjectType = JSON.parse(value);
+                        onSettingsChange('subjectType', newSubjectType);
+                      }}
+                      // disabled={gameSettings.useIndex}
+                    >
+                      <option value="[2,4]">全部</option>
+                      <option value="[2]">仅动画</option>
+                      <option value="[4]">仅游戏</option>
+                    </select>
+                  </div>
+                  <div className="filter-item">
+                  <label>启用NSFW条目：</label>
+                    <input 
+                      type="checkbox"
+                      checked={gameSettings.enableNSFW}
+                      disabled={!loginInfo}
+                      onChange={(e) => {
+                        onSettingsChange('enableNSFW', e.target.checked)
+                      }}
+                    />
+                    <span className="tooltip-trigger">
+                      ?
+                      <span className="tooltip-text">
+                        此选项须登录Bangumi账号，并且账号具有授权，该选项才可生效。
+                      </span>
+                    </span>
+                  </div>
                 </div>
               </div>
               

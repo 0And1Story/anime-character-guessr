@@ -493,7 +493,7 @@ app.get('/bangumi-authorize', async (req, res) => {
     }
 
     const expires = Date.now() + data.expires_in * 1000
-    res.redirect(`${config.client_uri}/bangumi-authorize?access_token=${data.access_token}&expires=${expires}`)
+    res.redirect(`${config.client_uri}/bangumi-authorize?access_token=${data.access_token}&user_id=${data.user_id}&expires=${expires}`)
 
     // res.json(data)
   } catch (err) {

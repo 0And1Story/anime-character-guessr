@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
-import { getRandomCharacter, getCharacterAppearances, generateFeedback } from '../utils/anime';
+import { getRandomCharacter, getCharacterAppearances, generateFeedback, getLoginInfo, enableAuthorizedSearch } from '../utils/anime';
 import SearchBar from '../components/SearchBar';
 import GuessesTable from '../components/GuessesTable';
 import SettingsPopup from '../components/SettingsPopup';
@@ -13,6 +13,7 @@ import '../styles/SinglePlayer.css';
 import axios from 'axios';
 
 function SinglePlayer() {
+  const [loginInfo, setLoginInfo] = useState(null)
   const [guesses, setGuesses] = useState([]);
   const [guessesLeft, setGuessesLeft] = useState(10);
   const [isGuessing, setIsGuessing] = useState(false);
@@ -43,19 +44,27 @@ function SinglePlayer() {
     enableHints: true,
     includeGame: false,
     timeLimit: null,
-    subjectSearch: true
+    subjectSearch: true,
+    enableNSFW: false,
   });
+
+  // Get login info
+  useEffect(() => {
+    setLoginInfo(getLoginInfo())
+    enableAuthorizedSearch(gameSettings.enableNSFW, loginInfo?.access_token)
+  }, [loginInfo, gameSettings])
 
   // Initialize game
   useEffect(() => {
     let isMounted = true;
     
-    axios.get('https://anime-character-guessr.onrender.com/').then(response => {
+    axios.get(import.meta.env.VITE_SERVER_URL).then(response => {
       console.log(response.data);
     });
 
     const initializeGame = async () => {
       try {
+        enableAuthorizedSearch(gameSettings.enableNSFW, loginInfo?.access_token)
         const character = await getRandomCharacter(gameSettings);
         if (isMounted) {
           setAnswerCharacter(character);
@@ -235,6 +244,7 @@ function SinglePlayer() {
 
     const initializeNewGame = async () => {
       try {
+        enableAuthorizedSearch(gameSettings.enableNSFW, loginInfo?.access_token)
         const character = await getRandomCharacter(gameSettings);
         // console.log(character);
         setAnswerCharacter(character);
@@ -333,6 +343,7 @@ function SinglePlayer() {
           onSettingsChange={handleSettingsChange}
           onClose={() => setSettingsPopup(false)}
           onRestart={handleRestartWithSettings}
+          loginInfo={loginInfo}
         />
       )}
 
