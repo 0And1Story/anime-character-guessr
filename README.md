@@ -1,11 +1,11 @@
-> 一个猜ACG角色的小游戏，基于 [kennylimz](https://github.com/kennylimz/anime-character-guessr) 的版本魔改而来。
+> 一个猜ACG角色的小游戏，基于 [[kennylimz]](https://github.com/kennylimz/anime-character-guessr) 的版本魔改而来。
 
-### 主要的改进：
+### 主要的改进
 
 - 添加了对 `Galgame` 等游戏条目的支持。
 - 添加了 `Bangumi` 账号登录的功能，以便支持 `NSFW` 条目的搜索。
 
-### 使用方法：
+### 使用方法
 
 分别在 `client` 和 `server` 文件夹下执行
 
@@ -17,6 +17,8 @@ npm run dev
 即可。
 
 客户端端口5173，服务端端口3000。
+
+服务器部署应该不用多说，生产环境的具体操作看 `package.json` 应该就懂了。
 
 ### `dotenv` 配置
 
@@ -39,3 +41,9 @@ BANGUMI_APPID="<你的Bangumi应用ID>"
 BANGUMI_APPSEC="<你的Bangumi应用密钥>"
 BANGUMI_REDIRECT_URI="http://localhost:3000/bangumi-authorize"
 ```
+
+### TODO List
+
+- [ ] 解决 `Bangumi API` 限流问题
+- [ ] 添加 `Redis` 缓存
+- [ ] 添加数据库持久层，引入 [[Bangumi Archive]](https://github.com/bangumi/archive) 以减少 API 调用
