@@ -1,5 +1,5 @@
 import { useRef, useState, useEffect } from 'react';
-import axios from 'axios';
+import axios from '../utils/cached-axios';
 import { searchSubjects, getCharactersBySubjectId, getCharacterDetails } from '../utils/anime';
 import '../styles/search.css';
 

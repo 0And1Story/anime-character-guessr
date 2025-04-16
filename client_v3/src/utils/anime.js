@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios from './cached-axios';
 import cookie from 'react-cookies';
 
 const API_BASE_URL = 'https://api.bgm.tv';
