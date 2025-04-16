@@ -297,14 +297,61 @@
   color: #64748b;
 }
 
-.answer-summary {
-  margin-top: 10px;
+/* 角色信息部分样式 */
+.answer-summary,
+.answer-appearances,
+.answer-tags {
+  margin-top: 16px;
   font-size: 14px;
   color: #666;
   line-height: 1.5;
   max-height: 200px;
   overflow-y: auto;
   padding-right: 10px;
+}
+
+.answer-summary h3,
+.answer-appearances h3,
+.answer-tags h3 {
+  margin: 0 0 8px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.appearances-list {
+  margin: 0;
+  padding-left: 20px;
+  color: #475569;
+  line-height: 1.6;
+}
+
+.appearances-list li {
+  margin-bottom: 4px;
+}
+
+.tags-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.character-tag {
+  display: inline-block;
+  padding: 4px 10px;
+  background: #e2e8f0;
+  border-radius: 16px;
+  font-size: 14px;
+  color: #475569;
+}
+
+.more-tags {
+  display: inline-block;
+  padding: 4px 10px;
+  background: #cbd5e0;
+  border-radius: 16px;
+  font-size: 14px;
+  color: #1e293b;
 }
 
 .answer-summary::-webkit-scrollbar {
@@ -602,6 +649,29 @@
   .answer-character-name-cn {
     font-size: 16px;
   }
+
+  .character-name-container {
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+
+  .button-container {
+    position: relative;
+    margin-top: 16px;
+    right: auto;
+    top: auto;
+  }
+
+  .answer-appearances h3,
+  .answer-tags h3,
+  .answer-summary h3 {
+    text-align: center;
+  }
+
+  .tags-container {
+    justify-content: center;
+  }
 }
 
 @media (prefers-color-scheme: dark) {
@@ -616,12 +686,12 @@
     background-color: #ffffff;
     border-color: #e2e8f0;
   }
-  
+
   .settings-row input[type="checkbox"]:checked {
     background-color: #3b82f6;
     border-color: #3b82f6;
   }
-} 
+}
 
 .popup-footer {
   padding-top: 10px;
@@ -990,4 +1060,3 @@
 .submit-tags-btn:disabled:hover {
   background: #94a3b8;
 }
-
