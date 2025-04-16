@@ -12,7 +12,7 @@ import '../styles/Multiplayer.css';
 import '../styles/game.css';
 import CryptoJS from 'crypto-js';
 
-const secret = "my-secret-key";
+const secret = import.meta.env.VITE_AES_SECRET;
 const SOCKET_URL = import.meta.env.VITE_SERVER_URL;
 
 const Multiplayer = () => {
