@@ -34,7 +34,7 @@ const Home = () => {
           <br/>
           灵感来源<a href="https://blast.tv/counter-strikle">BLAST.tv</a>, <a href="https://anime-character-guessr.netlify.app/">anime-character-guessr</a>, 
           数据来源<a href="https://bgm.tv/">Bangumi</a>。<br/>
-          <a href="https://space.bilibili.com/357653742">作者</a>：“Bangumi API对访问量有限制，请大家省着点用（；´д｀）ゞ”
+          <a href="https://space.bilibili.com/357653742">作者</a>：“感谢Bangumi管理员，限流问题已解决( •̀ ω •́ )y”
         </p>
         <p>
           “当太阳升起时，就把昨天忘掉。”
