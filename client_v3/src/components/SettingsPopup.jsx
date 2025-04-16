@@ -693,6 +693,32 @@ function SettingsPopup({ gameSettings, onSettingsChange, onClose, onRestart, hid
                     />
                   </div>
                 )}
+                <div className="settings-row">
+                  <label>每个角色的标签数：</label>
+                  <input 
+                    type="number"
+                    value={gameSettings.characterTagNum || ''}
+                    onChange={(e) => {
+                      const value = e.target.value === '' ? 0 : Math.max(0, Math.min(10, parseInt(e.target.value) || 0));
+                      onSettingsChange('characterTagNum', value);
+                    }}
+                    min="0"
+                    max="10"
+                  />
+                </div>
+                <div className="settings-row">
+                  <label>每个作品的标签数：</label>
+                  <input 
+                    type="number"
+                    value={gameSettings.subjectTagNum || ''}
+                    onChange={(e) => {
+                      const value = e.target.value === '' ? 0 : Math.max(0, Math.min(10, parseInt(e.target.value) || 0));
+                      onSettingsChange('subjectTagNum', value);
+                    }}
+                    min="0"
+                    max="10"
+                  />
+                </div>
               </div>
             </div>
 

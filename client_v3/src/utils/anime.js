@@ -160,11 +160,11 @@ async function getCharacterAppearances(characterId, gameSettings) {
         }
       })
     );
-    idToTags[characterId].slice(0, 6).forEach(tag => allMetaTags.add(tag));
-    if (allMetaTags.size < 10) {
+    idToTags[characterId].slice(0, Math.min(gameSettings.characterTagNum, idToTags[characterId].length)).forEach(tag => allMetaTags.add(tag));
+    if (allMetaTags.size < gameSettings.characterTagNum+gameSettings.subjectTagNum) {
       for (const tag of highestRatingCountTags) {
         allMetaTags.add(tag);
-        if (allMetaTags.size >= 10) break;
+        if (allMetaTags.size >= gameSettings.characterTagNum+gameSettings.subjectTagNum) break;
       }
     }
 

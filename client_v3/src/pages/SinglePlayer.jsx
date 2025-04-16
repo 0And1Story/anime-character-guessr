@@ -45,6 +45,8 @@ function SinglePlayer() {
     includeGame: false,
     timeLimit: null,
     subjectSearch: true,
+    characterTagNum: 6,
+    subjectTagNum: 4,
     enableNSFW: false,
   });
 
