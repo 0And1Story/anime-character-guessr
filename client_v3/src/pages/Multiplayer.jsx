@@ -665,7 +665,7 @@ const Multiplayer = () => {
             />
           )}
 
-          {showCharacterPopup && answerCharacter && (
+          {globalGameEnd && showCharacterPopup && answerCharacter && (
             <GameEndPopup
               result={guesses.some(g => g.isAnswer) ? 'win' : 'lose'}
               answer={answerCharacter}
