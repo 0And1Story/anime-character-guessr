@@ -42,34 +42,37 @@ async function getSubjectDetails(subjectId) {
 
     let year = airDate ? parseInt(airDate.split('-')[0]) : null;
 
-    // // Extract meta tags and add animation studios
-    // const meta_tags = response.data.meta_tags || [];
+    // Extract meta tags and add animation studios
+    // const persons = [];
     // const animationStudio = response.data.infobox?.find(item => item.key === '动画制作')?.value;
     // if (animationStudio && animationStudio.length < 50) {
     //   // Split by both '×' and '/' and trim whitespace from each studio
     //   const studioSplit = animationStudio.split(/[×/()、（）\[\]]/).map(studio => studio.trim()).filter(studio => studio.length < 30 && studio.length > 0);
-    //   meta_tags.push(...studioSplit);
+    //   persons.push(...studioSplit);
     // }
 
     // const publisher = response.data.infobox?.find(item => item.key === '发行')?.value;
     // if (publisher && publisher.length < 50) {
     //   const studioTrim = publisher.split(/[×/()、（）\[\]]/)[0].trim();
-    //   meta_tags.push(studioTrim);
+    //   persons.push(studioTrim);
     // }
 
-    const tags = new Set();
+    const tags = [];
     if (response.data.type === 2) {
-      response.data.tags.slice(0, 10).filter(tag => !tag.name.includes('20')).forEach(tag => tags.add(tag.name));
+      response.data.tags.slice(0, 10)
+        .filter(tag => !tag.name.includes('20'))
+        .forEach(tag => tags.push({ [tag.name]: tag.count }));
     }
     if (response.data.type === 4) {
-      response.data.tags.slice(0, 5).filter(tag => !tag.name.includes('20')).forEach(tag => tags.add(tag.name));
+      response.data.tags.slice(0, 5)
+        .filter(tag => !tag.name.includes('20'))
+        .forEach(tag => tags.push({ [tag.name]: tag.count }));
     }
 
     return {
       name: response.data.name_cn || response.data.name,
       year,
-      meta_tags: response.data.meta_tags,
-      tags: Array.from(tags),
+      tags,
       rating: response.data.rating?.score || 0,
       rating_count: response.data.rating?.total || 0
     };
@@ -122,8 +125,7 @@ async function getCharacterAppearances(characterId, gameSettings) {
     let latestAppearance = -1;
     let earliestAppearance = -1;
     let highestRating = -1;
-    let highestRatingCount = -1;
-    let highestRatingCountTags = [];
+    const tagCounts = new Map(); // Track cumulative counts for each tag
     const allMetaTags = new Set();
 
     // Get just the names and collect meta tags
@@ -145,11 +147,13 @@ async function getCharacterAppearances(characterId, gameSettings) {
           if (details.rating > highestRating) {
             highestRating = details.rating;
           }
-          // Update meta tags only if this has the highest rating_count
-          if (details.rating_count > highestRatingCount) {
-            highestRatingCount = details.rating_count;
-            highestRatingCountTags = details.tags;
-          }
+
+          // Merge tag counts
+          details.tags.forEach(tagObj => {
+            const [[name, count]] = Object.entries(tagObj);
+            tagCounts.set(name, (tagCounts.get(name) || 0) + count);
+          });
+
           return {
             name: details.name,
             rating_count: details.rating_count
@@ -161,14 +165,22 @@ async function getCharacterAppearances(characterId, gameSettings) {
       })
     );
 
+    // Convert tagCounts to array of objects and sort by count
+    const sortedTags = Array.from(tagCounts.entries())
+      .map(([name, count]) => ({ [name]: count }))
+      .sort((a, b) => Object.values(b)[0] - Object.values(a)[0]);
+
     if (idToTags && idToTags[characterId]) {
       idToTags[characterId].slice(0, Math.min(gameSettings.characterTagNum, idToTags[characterId].length)).forEach(tag => allMetaTags.add(tag));
     }
-    if (allMetaTags.size < gameSettings.characterTagNum+gameSettings.subjectTagNum) {
-      for (const tag of highestRatingCountTags) {
-        allMetaTags.add(tag);
-        if (allMetaTags.size >= gameSettings.characterTagNum+gameSettings.subjectTagNum) break;
-      }
+
+    // Add at most subjectTagNum tags from sortedTags
+    let addedTagCount = 0;
+    for (const tagObj of sortedTags) {
+      if (addedTagCount >= gameSettings.subjectTagNum) break;
+      const tagName = Object.keys(tagObj)[0];
+      allMetaTags.add(tagName);
+      addedTagCount++;
     }
 
     const validAppearances = appearances
