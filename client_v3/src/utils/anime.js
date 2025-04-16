@@ -1,5 +1,6 @@
 import axios from './cached-axios';
 import cookie from 'react-cookies';
+import { idToTags } from '../data/id_tags.js';
 
 const API_BASE_URL = 'https://api.bgm.tv';
 
@@ -149,8 +150,6 @@ async function getCharacterAppearances(characterId, gameSettings) {
             highestRatingCount = details.rating_count;
             highestRatingCountTags = details.tags;
           }
-          // Add each meta tag individually to the Set
-          details.meta_tags.forEach(tag => allMetaTags.add(tag));
           return {
             name: details.name,
             rating_count: details.rating_count
@@ -161,7 +160,13 @@ async function getCharacterAppearances(characterId, gameSettings) {
         }
       })
     );
-    highestRatingCountTags.forEach(tag => allMetaTags.add(tag));
+    idToTags[characterId].slice(0, 6).forEach(tag => allMetaTags.add(tag));
+    if (allMetaTags.size < 10) {
+      for (const tag of highestRatingCountTags) {
+        allMetaTags.add(tag);
+        if (allMetaTags.size >= 10) break;
+      }
+    }
 
     const validAppearances = appearances
       .filter(appearance => appearance !== null)
