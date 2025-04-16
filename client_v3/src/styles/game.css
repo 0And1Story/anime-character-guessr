@@ -56,6 +56,23 @@ html, body, #root {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
+.clear-cache-button {
+  padding: 8px 24px;
+  font-size: 16px;
+  border: none;
+  border-radius: 8px;
+  background: #ff3a3a;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.clear-cache-button:hover {
+  background: #ff6d6d;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .container { 

@@ -1,6 +1,7 @@
 import '../styles/popups.css';
 import { enableAuthorizedSearch, getIndexInfo, searchSubjects } from '../utils/anime';
 import { useState, useEffect, useRef } from 'react';
+import axiosCache from '../utils/cached-axios';
 
 function SettingsPopup({ gameSettings, onSettingsChange, onClose, onRestart, hideRestart = false, loginInfo }) {
   const [indexInputValue, setIndexInputValue] = useState('');
@@ -117,6 +118,11 @@ function SettingsPopup({ gameSettings, onSettingsChange, onClose, onRestart, hid
     const newAddedSubjects = gameSettings.addedSubjects.filter(subject => subject.id !== id);
     onSettingsChange('addedSubjects', newAddedSubjects);
   };
+
+  const handleClearCache = () => {
+    axiosCache.clearCache();
+    alert('缓存已清空！');
+  }
 
   return (
     <div className="popup-overlay">
@@ -763,6 +769,9 @@ function SettingsPopup({ gameSettings, onSettingsChange, onClose, onRestart, hid
                 重新开始
               </button>
               <label style={{ fontSize: '0.8rem' }}>*设置改动点了才会生效！否则下一把生效</label>
+              <button className="clear-cache-button" onClick={handleClearCache} style={{ marginLeft: '20px' }}>
+                清空缓存
+              </button>
             </>
           )}
         </div>
