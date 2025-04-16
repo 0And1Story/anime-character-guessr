@@ -28,6 +28,7 @@ npm run dev
 
 ```dotenv
 VITE_SERVER_URL="http://localhost:3000"
+VITE_AES_SECRET="<AES加密密钥>"
 VITE_BANGUMI_APP_ID="<你的Bangumi应用ID>"
 VITE_BANGUMI_REDIRECT_URI="http://localhost:3000/bangumi-authorize"
 ```

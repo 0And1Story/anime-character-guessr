@@ -94,7 +94,7 @@ function SinglePlayer() {
       } catch (error) {
         console.error('Failed to initialize game:', error);
         if (isMounted) {
-          alert('游戏初始化失败，请刷新页面重试');
+          alert('游戏初始化失败，请刷新页面重试\n多次尝试还失败就不要玩了，Bangumi API崩了');
         }
       }
     };
@@ -269,7 +269,7 @@ function SinglePlayer() {
         console.log('初始化游戏', gameSettings);
       } catch (error) {
         console.error('Failed to initialize new game:', error);
-        alert('游戏初始化失败，请重试');
+        alert('游戏初始化失败，请重试\n多次尝试还失败就不要玩了，Bangumi API崩了');
       }
     };
 

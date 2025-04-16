@@ -418,7 +418,7 @@ const Multiplayer = () => {
         setGuesses([]);
       } catch (error) {
         console.error('Failed to initialize game:', error);
-        alert('游戏初始化失败，请重试');
+        alert('游戏初始化失败，请重试\n多次尝试还失败就不要玩了，Bangumi API崩了');
       }
     }
   };
