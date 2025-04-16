@@ -97,7 +97,7 @@ async function getCharacterAppearances(characterId, gameSettings) {
     }
 
     let filteredAppearances;
-    if (gameSettings.includeGame) {
+    if (gameSettings.includeGame || gameSettings.subjectType.length === 2) {
       filteredAppearances = subjectsResponse.data.filter(appearance =>
         (appearance.staff === '主角' || appearance.staff === '配角')
         && (appearance.type === 2 || appearance.type === 4)
