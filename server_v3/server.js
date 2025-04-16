@@ -297,10 +297,14 @@ io.on('connection', (socket) => {
     }
 
     // Update player's guesses string
-    player.guesses += result === 'win' ? '✌' : '💀';
+    if (result === 'surrender') {
+      player.guesses += '🏳️';
+    } else {
+      player.guesses += result === 'win' ? '✌' : '💀';
+    }
 
     // Check if all players have ended their game or disconnected
-    const allEnded = room.players.every(p => p.guesses.includes('✌') || p.guesses.includes('💀') || p.disconnected);
+    const allEnded = room.players.every(p => p.guesses.includes('✌') || p.guesses.includes('💀') || p.guesses.includes('🏳️') || p.disconnected);
     const winner = room.players.find(p => p.guesses.includes('✌'));
 
     if (winner) {
@@ -354,6 +358,32 @@ io.on('connection', (socket) => {
       socket.emit('updateGameSettings', { settings: room.settings });
       console.log(`Game settings sent to new player in room ${roomId}`);
     }
+  });
+
+  // Handle surrender event
+  socket.on('surrender', ({ roomId }) => {
+    const room = rooms.get(roomId);
+
+    if (!room) {
+      socket.emit('error', { message: 'Room not found' });
+      return;
+    }
+
+    const player = room.players.find(p => p.id === socket.id);
+    if (!player) {
+      socket.emit('error', { message: 'Player not found in room' });
+      return;
+    }
+
+    // Append 🏳️ to player's guesses
+    player.guesses += '🏳️';
+
+    // Broadcast updated players to all clients in the room
+    io.to(roomId).emit('updatePlayers', {
+      players: room.players
+    });
+
+    console.log(`Player ${player.username} surrendered in room ${roomId}`);
   });
 
   // Handle timeout event

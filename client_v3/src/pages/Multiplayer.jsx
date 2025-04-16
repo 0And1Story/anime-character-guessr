@@ -378,6 +378,18 @@ const Multiplayer = () => {
     }, 100);
   };
 
+  const handleSurrender = () => {
+    if (gameEnd || gameEndedRef.current) return;
+    gameEndedRef.current = true;
+    setGameEnd(true);
+
+    // Emit game end event with surrender result
+    socket.emit('gameEnd', {
+      roomId,
+      result: 'surrender'
+    });
+  };
+
 
 
   const handleStartGame = async () => {
@@ -541,7 +553,15 @@ const Multiplayer = () => {
                 />
               )}
               <div className="game-info">
-                <div className="guesses-left">剩余猜测次数: {guessesLeft}</div>
+                <div className="guesses-left">
+                  <span>剩余猜测次数: {guessesLeft}</span>
+                  <button
+                    className="surrender-button"
+                    onClick={handleSurrender}
+                  >
+                    投降 🏳️
+                  </button>
+                </div>
                 {gameSettings.enableHints && hints.first && (
                   <div className="hints">
                     {guessesLeft <= 5 && <div className="hint">提示1: {hints.first}</div>}
