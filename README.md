@@ -45,6 +45,8 @@ BANGUMI_REDIRECT_URI="http://localhost:3000/bangumi-authorize"
 
 ### TODO List
 
-- [ ] 解决 `Bangumi API` 限流问题
-- [ ] 添加 `Redis` 缓存
+- [x] 解决 `Bangumi API` 限流问题（感谢Bangumi管理员）
+- [x] 添加 `Redis` 缓存（因Bangumi架构更改此项没必要）
 - [ ] 添加数据库持久层，引入 [[Bangumi Archive]](https://github.com/bangumi/archive) 以减少 API 调用
+- [ ] 添加静态 `JSON` 数据以减少 API 调用
+- [ ] 优化角色标签逻辑，特别是游戏条目
