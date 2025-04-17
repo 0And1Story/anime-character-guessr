@@ -694,7 +694,7 @@ function SettingsPopup({ gameSettings, onSettingsChange, onClose, onRestart, hid
                   </div>
                 )}
                 <div className="settings-row">
-                  <label>每个角色的标签数：</label>
+                  <label>角色标签数：</label>
                   <input 
                     type="number"
                     value={gameSettings.characterTagNum || ''}
@@ -707,7 +707,7 @@ function SettingsPopup({ gameSettings, onSettingsChange, onClose, onRestart, hid
                   />
                 </div>
                 <div className="settings-row">
-                  <label>每个作品的标签数：</label>
+                  <label>作品标签数：</label>
                   <input 
                     type="number"
                     value={gameSettings.subjectTagNum || ''}
