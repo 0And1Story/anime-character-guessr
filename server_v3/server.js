@@ -10,6 +10,8 @@ const app = express();
 const server = http.createServer(app);
 const PORT = process.env.PORT || 3000;
 // const secret = "my-secret-key";
+let visit_count = 0;
+
 const cors_options = {
   origin: [
     config.client_uri,
@@ -487,10 +489,15 @@ server.listen(PORT, () => {
 
 app.get('/', (req, res) => {
   res.send(`Hello from the server!`);
+  visit_count++;
 });
 
 app.get('/room-count', (req, res) => {
   res.json({ count: rooms.size });
+});
+
+app.get('/visit-count', (req, res) => {
+  res.json({ count: visit_count });
 });
 
 app.get('/bangumi-authorize', async (req, res) => {
