@@ -74,12 +74,9 @@ function GameEndPopup({ result, answer, onClose }) {
                 <div className="answer-tags">
                   <h3>标签：</h3>
                   <div className="tags-container">
-                    {answer.metaTags.slice(0, 8).map((tag, index) => (
+                    {answer.metaTags.map((tag, index) => (
                       <span key={index} className="character-tag">{tag}</span>
                     ))}
-                    {answer.metaTags.length > 8 && (
-                      <span className="more-tags">+{answer.metaTags.length - 8}</span>
-                    )}
                   </div>
                 </div>
               )}
