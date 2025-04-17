@@ -1,12 +1,13 @@
 import axios from "axios";
 
-const DB_SERVER_URL = import.meta.env.VITE_DB_SERVER_URL || 'http://localhost:3001';
+const DB_SERVER_URL = import.meta.env.VITE_DB_SERVER_URL;
 
-if (!DB_SERVER_URL) {
+if (import.meta.env.VITE_ENABLE_DB_SERVER && !DB_SERVER_URL) {
   throw new Error('VITE_DB_SERVER_URL environment variable is not defined');
 }
 
 export async function submitCharacterTags(characterId, tags) {
+  if (!import.meta.env.VITE_ENABLE_DB_SERVER) return;
   try {
     const response = await fetch(`${DB_SERVER_URL}/api/character-tags`, {
       method: 'POST',
@@ -31,6 +32,7 @@ export async function submitCharacterTags(characterId, tags) {
 }
 
 export async function proposeCustomTags(characterId, tags) {
+  if (!import.meta.env.VITE_ENABLE_DB_SERVER) return;
   try {
     const response = await fetch(`${DB_SERVER_URL}/api/propose-tags`, {
       method: 'POST',
