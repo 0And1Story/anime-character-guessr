@@ -59,13 +59,18 @@ function GameEndPopup({ result, answer, onClose }) {
                 <div className="answer-appearances">
                   <h3>出演作品：</h3>
                   <ul className="appearances-list">
+                    {answer.appearances.map((appearance, index) => (
+                      <li key={index}>{appearance}</li>
+                    ))}
+                  </ul>
+                  {/* <ul className="appearances-list">
                     {answer.appearances.slice(0, 3).map((appearance, index) => (
                       <li key={index}>{appearance}</li>
                     ))}
                     {answer.appearances.length > 3 && (
                       <li>...等 {answer.appearances.length} 部作品</li>
                     )}
-                  </ul>
+                  </ul> */}
                 </div>
               )}
 
