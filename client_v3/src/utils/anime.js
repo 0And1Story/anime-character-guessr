@@ -73,6 +73,7 @@ async function getSubjectDetails(subjectId) {
       name: response.data.name_cn || response.data.name,
       year,
       tags,
+      meta_tags: response.data.meta_tags,
       rating: response.data.rating?.score || 0,
       rating_count: response.data.rating?.total || 0
     };
