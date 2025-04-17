@@ -137,7 +137,9 @@ async function getCharacterAppearances(characterId, gameSettings) {
 
           if (!details || details.year === null) return null;
 
-          if (!gameSettings.metaTags.filter(tag => tag !== '').every(tag => allMetaTags.has(tag))) return null;
+          if (!gameSettings.metaTags.filter(tag => tag !== '').every(tag => details.meta_tags.includes(tag))) {
+            return null;
+          }
 
           if (latestAppearance === -1 || details.year > latestAppearance) {
             latestAppearance = details.year;
