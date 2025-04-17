@@ -54,7 +54,7 @@ function SinglePlayer() {
   useEffect(() => {
     setLoginInfo(getLoginInfo())
     enableAuthorizedSearch(gameSettings.enableNSFW, loginInfo?.access_token)
-  }, [loginInfo, gameSettings])
+  }, [gameSettings])
 
   // Initialize game
   useEffect(() => {
