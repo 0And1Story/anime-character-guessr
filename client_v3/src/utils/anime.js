@@ -17,9 +17,9 @@ function getLoginInfo() {
 
 function enableAuthorizedSearch(isEnable, access_token) {
   if (isEnable && access_token) {
-    axios.defaults.headers.common['Authorization'] = `Bearer ${access_token}`
+    axios.axios.defaults.headers.common['Authorization'] = `Bearer ${access_token}`
   } else {
-    axios.defaults.headers.common['Authorization'] = null
+    axios.axios.defaults.headers.common['Authorization'] = null
   }
 }
 

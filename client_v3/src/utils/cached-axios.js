@@ -16,6 +16,7 @@ class RequestCache {
       },
     };
     this._loadCacheFromStorage();
+    this.axios = axios;
   }
 
   async get(url, config = {}) {
@@ -49,7 +50,7 @@ class RequestCache {
     localStorage.removeItem('requestCache');
   }
 
-  getCache(key) { 
+  getCache(key) {
     return this.cache.get(key);
   }
 
