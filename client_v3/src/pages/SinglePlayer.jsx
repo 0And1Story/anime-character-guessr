@@ -159,6 +159,7 @@ function SinglePlayer() {
           },
           metaTags: guessData.metaTags,
           sharedMetaTags: guessData.metaTags,
+          sharedCVs: guessData.metaTags.cv_tags,
           isAnswer: true
         }]);
 
@@ -189,6 +190,7 @@ function SinglePlayer() {
           sharedAppearances: feedback.shared_appearances,
           metaTags: guessData.metaTags,
           sharedMetaTags: feedback.metaTags.shared,
+          sharedCVs: feedback.metaTags.sharedCVs,
           isAnswer: false
         }]);
 
@@ -219,6 +221,7 @@ function SinglePlayer() {
           sharedAppearances: feedback.shared_appearances,
           metaTags: guessData.metaTags,
           sharedMetaTags: feedback.metaTags.shared,
+          sharedCVs: feedback.metaTags.sharedCVs,
           isAnswer: false
         }]);
       }

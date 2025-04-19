@@ -100,13 +100,21 @@ function GuessesTable({ guesses, onTagExpand, gameSettings }) {
                       </span>
                     );
                   })}
+                  {guess.metaTags.cv_tags.map((tag, tagIndex) => (
+                    <span 
+                      key={tagIndex}
+                      className={`meta-tag ${guess.sharedCVs.includes(tag) ? 'shared' : ''}`}
+                    >
+                      {tag}
+                    </span>
+                  ))}
                   <span 
                     key={getShortTags(guess.metaTags, gameSettings).length}
                     className={`meta-tag expand-tag`}
                     onClick={() => onTagExpand(guess, guessIndex)}
                     style={{ color: '#0084B4', cursor: 'pointer' }}
                   >
-                    +{getAllTags(guess.metaTags).length - getShortTags(guess.metaTags, gameSettings).length}
+                    +{getAllTags(guess.metaTags).length - getShortTags(guess.metaTags, gameSettings).length - guess.metaTags.cv_tags.length}
                   </span>
                 </div>
               </td>

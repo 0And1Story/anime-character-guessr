@@ -1,6 +1,7 @@
 import axios from './cached-axios';
 import cookie from 'react-cookies';
 import { idToTags } from '../data/id_tags.js';
+import { TAG_CLASSIFY } from '../data/tag_classify.js';
 
 const API_BASE_URL = 'https://api.bgm.tv';
 
@@ -129,9 +130,14 @@ async function getCharacterAppearances(characterId, gameSettings) {
     let earliestAppearance = -1;
     let highestRating = -1;
     const subjectTagsCount = new Map(); // Track cumulative counts for each tag
-    const allMetaTags = new Set();
+    let allMetaTags = new Set();
 
     const allTags = {
+      platform: [],
+      region: [],
+      source: [],
+      category: [],
+      genre: [],
       meta_tags: [],
       subject_tags: [],
       character_tags: [],
@@ -216,16 +222,73 @@ async function getCharacterAppearances(characterId, gameSettings) {
       });
     }
 
+    let sortedMetaTags = new Set(sortedSubjectTags.filter(tag => allMetaTags.has(tag)))
+    sortedMetaTags = [
+      ...sortedMetaTags,
+      ...Array.from(allMetaTags).filter(tag => !sortedMetaTags.has(tag)) // meta tags with no count data
+    ]
+
     sortedSubjectTags = sortedSubjectTags
       .filter(tag => !tag.match(/\d{4}/)) // remove year tags
       .filter(tag => !allMetaTags.has(tag)) // remove meta tags
       .filter(tag => !cvTags.has(tag)) // remove cv tags
       .filter(tag => !characterTags.includes(tag)) // remove character tags
 
-    allTags.meta_tags.push(...allMetaTags)
+    // Combine tags of different types together
+    allTags.meta_tags.push(...sortedMetaTags)
     allTags.subject_tags.push(...sortedSubjectTags)
     allTags.character_tags.push(...characterTags)
     allTags.cv_tags.push(...cvTags)
+
+    // Move special types of meta tags to separate types
+    // For Anime
+    if (gameSettings.subjectType.length === 1 && gameSettings.subjectType[0] === 2) {
+      allTags.meta_tags = allTags.meta_tags.map(tag => {
+        if (TAG_CLASSIFY.anime.platform.includes(tag)) {
+          allTags.platform.push(tag)
+          return null
+        }
+        if (TAG_CLASSIFY.anime.region.includes(tag)) {
+          allTags.region.push(tag)
+          return null
+        }
+        if (TAG_CLASSIFY.anime.source.includes(tag)) {
+          allTags.source.push(tag)
+          return null
+        }
+        if (TAG_CLASSIFY.anime.genre.includes(tag)) {
+          allTags.genre.push(tag)
+          return null
+        }
+        return tag
+      }).filter(tag => tag)
+    }
+
+    // For Game
+    if (gameSettings.subjectType.length === 1 && gameSettings.subjectType[0] === 4) {
+      allTags.meta_tags = allTags.meta_tags.map(tag => {
+        if (TAG_CLASSIFY.game.platform.includes(tag)) {
+          allTags.platform.push(tag)
+          return null
+        }
+        if (TAG_CLASSIFY.game.category.includes(tag)) {
+          allTags.category.push(tag)
+          return null
+        }
+        return tag
+      }).filter(tag => tag)
+
+      // For Galgame
+      if (gameSettings.metaTags[3] === "Galgame") {
+        allTags.subject_tags = allTags.subject_tags.map(tag => {
+          if (TAG_CLASSIFY.galgame.genre.includes(tag)) {
+            allTags.genre.push(tag)
+            return null
+          }
+          return tag
+        }).filter(tag => tag)
+      }
+    }
 
     return {
       appearances: validAppearances,
@@ -473,10 +536,12 @@ function generateFeedback(guess, answerCharacter) {
   for (const [tag_type, tags] of Object.entries(guess.metaTags)) {
     sharedMetaTags[tag_type] = tags.filter(tag => answerMetaTagsSet.has(tag));
   }
+  const sharedCVs = guess.metaTags.cv_tags.filter(tag => answerCharacter.metaTags.cv_tags.includes(tag));
 
   result.metaTags = {
     guess: getAllTags(guess.metaTags),
-    shared: sharedMetaTags
+    shared: sharedMetaTags,
+    sharedCVs: sharedCVs
   };
 
   if (guess.latestAppearance === -1 || answerCharacter.latestAppearance === -1) {
@@ -575,6 +640,11 @@ async function searchSubjects(keyword) {
 
 function getAllTags(allTags) {
   const {
+    platform,
+    region,
+    source,
+    category,
+    genre,
     meta_tags,
     subject_tags,
     character_tags,
@@ -582,11 +652,27 @@ function getAllTags(allTags) {
     added_tags,
   } = allTags
 
-  return [...meta_tags, ...subject_tags, ...character_tags, ...cv_tags, ...added_tags]
+  return [
+    ...platform,
+    ...region,
+    ...source,
+    ...category,
+    ...genre,
+    ...meta_tags,
+    ...subject_tags,
+    ...character_tags,
+    ...cv_tags,
+    ...added_tags
+  ]
 }
 
 function getShortTags(allTags, gameSettings) {
   let {
+    platform,
+    region,
+    source,
+    category,
+    genre,
     meta_tags,
     subject_tags,
     character_tags,
@@ -594,11 +680,36 @@ function getShortTags(allTags, gameSettings) {
     added_tags,
   } = allTags
 
-  meta_tags = meta_tags.slice(0, Math.min(6, meta_tags.length))
+  if (gameSettings.subjectType.length === 1 && gameSettings.subjectType[0] === 2) {
+    platform = platform.slice(0, Math.min(1, platform.length))
+    region = region.slice(0, Math.min(1, region.length))
+    source = source.slice(0, Math.min(1, source.length))
+    // genre = genre.slice(0, Math.min(1, genre.length))
+    meta_tags = []
+  } else if (gameSettings.subjectType.length === 1 && gameSettings.subjectType[0] === 4) {
+    platform = platform.slice(0, Math.min(1, platform.length))
+    category = category.slice(0, Math.min(1, category.length))
+    // genre = genre.slice(0, Math.min(1, genre.length))
+    meta_tags = meta_tags.filter(tag => tag != "游戏").slice(0, Math.min(4, meta_tags.length))
+  } else {
+    meta_tags = meta_tags.slice(0, Math.min(6, meta_tags.length))
+  }
+
   subject_tags = subject_tags.slice(0, Math.min(gameSettings.subjectTagNum, subject_tags.length))
   character_tags = character_tags.slice(0, Math.min(gameSettings.characterTagNum, character_tags.length))
 
-  return [...meta_tags, ...subject_tags, ...character_tags, ...cv_tags, ...added_tags]
+  return [
+    ...platform,
+    ...region,
+    ...source,
+    ...category,
+    ...genre,
+    ...meta_tags,
+    ...subject_tags,
+    ...character_tags,
+    // ...cv_tags, // special check for cv
+    ...added_tags
+  ]
 }
 
 export {
