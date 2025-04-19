@@ -50,4 +50,5 @@ BANGUMI_REDIRECT_URI="http://localhost:3000/bangumi-authorize"
 - [x] 添加 `LocalStorage` 缓存以减少 API 调用
 - [ ] 添加数据库持久层，引入 [[Bangumi Archive]](https://github.com/bangumi/archive) 以减少 API 调用
 - [ ] 添加静态 `JSON` 数据以减少 API 调用
-- [ ] 优化角色标签逻辑，特别是游戏条目
+- [x] 优化角色标签逻辑，特别是游戏条目
+- [ ] 改进目录索引功能
