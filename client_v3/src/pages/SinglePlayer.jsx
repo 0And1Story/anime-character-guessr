@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
-import { getRandomCharacter, getCharacterAppearances, generateFeedback, getLoginInfo, enableAuthorizedSearch } from '../utils/anime';
+import { getRandomCharacter, getCharacterAppearances, generateFeedback, getLoginInfo, enableAuthorizedSearch, getAllTags } from '../utils/anime';
 import SearchBar from '../components/SearchBar';
 import GuessesTable from '../components/GuessesTable';
 import SettingsPopup from '../components/SettingsPopup';
@@ -11,6 +11,7 @@ import Timer from '../components/Timer';
 import '../styles/game.css';
 import '../styles/SinglePlayer.css';
 import axios from 'axios';
+import TagsPopup from '../components/TagsPopup';
 
 function SinglePlayer() {
   const [loginInfo, setLoginInfo] = useState(null)
@@ -22,6 +23,11 @@ function SinglePlayer() {
   const [answerCharacter, setAnswerCharacter] = useState(null);
   const [settingsPopup, setSettingsPopup] = useState(false);
   const [helpPopup, setHelpPopup] = useState(false);
+  const [tagsPopup, setTagsPopup] = useState(false);
+  const [tagsPopupConfig, setTagsPopupConfig] = useState({
+    guess: undefined,
+    guessIndex: undefined,
+  });
   const [currentTimeLimit, setCurrentTimeLimit] = useState(null);
   const [shouldResetTimer, setShouldResetTimer] = useState(false);
   const [currentSubjectSearch, setCurrentSubjectSearch] = useState(true);
@@ -46,7 +52,7 @@ function SinglePlayer() {
     timeLimit: null,
     subjectSearch: true,
     characterTagNum: 6,
-    subjectTagNum: 4,
+    subjectTagNum: 6,
     enableNSFW: false,
   });
 
@@ -124,6 +130,8 @@ function SinglePlayer() {
         ...character,
         ...appearances
       };
+
+      // console.log(guessData)
 
       const isCorrect = guessData.id === answerCharacter.id;
       setGuessesLeft(prev => prev - 1);
@@ -351,6 +359,11 @@ function SinglePlayer() {
 
       <GuessesTable
         guesses={guesses}
+        onTagExpand={(guess, guessIndex) => {
+          setTagsPopupConfig({ guess, guessIndex })
+          setTagsPopup(true)
+        }}
+        gameSettings={gameSettings}
       />
 
       {settingsPopup && (
@@ -372,6 +385,13 @@ function SinglePlayer() {
           result={gameEndPopup.result}
           answer={gameEndPopup.answer}
           onClose={() => setGameEndPopup(null)}
+        />
+      )}
+
+      {tagsPopup && (
+        <TagsPopup
+          tagsPopupConfig={tagsPopupConfig}
+          onClose={() => setTagsPopup(false)}
         />
       )}
     </div>

@@ -1,7 +1,8 @@
 import '../styles/guesses.css';
 import { useState } from 'react';
+import { getAllTags, getShortTags } from '../utils/anime';
 
-function GuessesTable({ guesses }) {
+function GuessesTable({ guesses, onTagExpand, gameSettings }) {
   const [clickedExpandTags, setClickedExpandTags] = useState(new Set());
 
   const getGenderEmoji = (gender) => {
@@ -83,7 +84,7 @@ function GuessesTable({ guesses }) {
               </td>
               <td>
                 <div className="meta-tags-container">
-                  {guess.metaTags.map((tag, tagIndex) => {
+                  {getShortTags(guess.metaTags, gameSettings).map((tag, tagIndex) => {
                     const isExpandTag = tag === '展开';
                     const tagKey = `${guessIndex}-${tagIndex}`;
                     const isClicked = clickedExpandTags.has(tagKey);
@@ -91,7 +92,7 @@ function GuessesTable({ guesses }) {
                     return (
                       <span 
                         key={tagIndex}
-                        className={`meta-tag ${guess.sharedMetaTags.includes(tag) ? 'shared' : ''} ${isExpandTag ? 'expand-tag' : ''}`}
+                        className={`meta-tag ${getAllTags(guess.sharedMetaTags).includes(tag) ? 'shared' : ''} ${isExpandTag ? 'expand-tag' : ''}`}
                         onClick={isExpandTag ? () => handleExpandTagClick(guessIndex, tagIndex) : undefined}
                         style={isExpandTag && !isClicked ? { color: '#0084B4', cursor: 'pointer' } : undefined}
                       >
@@ -99,6 +100,14 @@ function GuessesTable({ guesses }) {
                       </span>
                     );
                   })}
+                  <span 
+                    key={getShortTags(guess.metaTags, gameSettings).length}
+                    className={`meta-tag expand-tag`}
+                    onClick={() => onTagExpand(guess, guessIndex)}
+                    style={{ color: '#0084B4', cursor: 'pointer' }}
+                  >
+                    +{getAllTags(guess.metaTags).length - getShortTags(guess.metaTags, gameSettings).length}
+                  </span>
                 </div>
               </td>
               <td>

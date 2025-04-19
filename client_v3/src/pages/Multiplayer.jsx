@@ -12,6 +12,7 @@ import GameEndPopup from '../components/GameEndPopup';
 import '../styles/Multiplayer.css';
 import '../styles/game.css';
 import CryptoJS from 'crypto-js';
+import TagsPopup from '../components/TagsPopup';
 
 const secret = import.meta.env.VITE_AES_SECRET;
 const SOCKET_URL = import.meta.env.VITE_SERVER_URL;
@@ -45,7 +46,7 @@ const Multiplayer = () => {
     timeLimit: 60,
     subjectSearch: true,
     characterTagNum: 6,
-    subjectTagNum: 4,
+    subjectTagNum: 6,
     enableNSFW: false,
   });
 
@@ -69,6 +70,11 @@ const Multiplayer = () => {
   const [showNames, setShowNames] = useState(true);
   const [currentSubjectSearch, setCurrentSubjectSearch] = useState(true);
   const [showCharacterPopup, setShowCharacterPopup] = useState(false);
+  const [tagsPopup, setTagsPopup] = useState(false);
+  const [tagsPopupConfig, setTagsPopupConfig] = useState({
+    guess: undefined,
+    guessIndex: undefined,
+  });
 
   useEffect(() => {
     // Initialize socket connection
@@ -257,6 +263,8 @@ const Multiplayer = () => {
         ...character,
         ...appearances
       };
+
+      // console.log(guessData)
 
       const isCorrect = guessData.id === answerCharacter.id;
       setGuessesLeft(prev => prev - 1);
@@ -573,7 +581,11 @@ const Multiplayer = () => {
               </div>
               <GuessesTable
                 guesses={guesses}
-                getGenderEmoji={getGenderEmoji}
+                onTagExpand={(guess, guessIndex) => {
+                  setTagsPopupConfig({ guess, guessIndex })
+                  setTagsPopup(true)
+                }}
+                gameSettings={gameSettings}
               />
             </div>
           )}
@@ -670,6 +682,13 @@ const Multiplayer = () => {
               result={guesses.some(g => g.isAnswer) ? 'win' : 'lose'}
               answer={answerCharacter}
               onClose={() => setShowCharacterPopup(false)}
+            />
+          )}
+
+          {tagsPopup && (
+            <TagsPopup
+              tagsPopupConfig={tagsPopupConfig}
+              onClose={() => setTagsPopup(false)}
             />
           )}
         </>
