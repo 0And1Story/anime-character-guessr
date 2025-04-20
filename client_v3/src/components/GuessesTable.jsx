@@ -84,7 +84,8 @@ function GuessesTable({ guesses, onTagExpand, gameSettings }) {
               </td>
               <td>
                 <div className="meta-tags-container">
-                  {getShortTags(guess.metaTags, gameSettings).map((tag, tagIndex) => {
+                  {Object.values(guess.sharedShortMetaTags).flat().map(({name, shared}, tagIndex) => {
+                    const tag = name;
                     const isExpandTag = tag === '展开';
                     const tagKey = `${guessIndex}-${tagIndex}`;
                     const isClicked = clickedExpandTags.has(tagKey);
@@ -92,7 +93,7 @@ function GuessesTable({ guesses, onTagExpand, gameSettings }) {
                     return (
                       <span 
                         key={tagIndex}
-                        className={`meta-tag ${getAllTags(guess.sharedMetaTags).includes(tag) ? 'shared' : ''} ${isExpandTag ? 'expand-tag' : ''}`}
+                        className={`meta-tag ${shared ? 'shared' : ''} ${isExpandTag ? 'expand-tag' : ''}`}
                         onClick={isExpandTag ? () => handleExpandTagClick(guessIndex, tagIndex) : undefined}
                         style={isExpandTag && !isClicked ? { color: '#0084B4', cursor: 'pointer' } : undefined}
                       >
@@ -100,21 +101,13 @@ function GuessesTable({ guesses, onTagExpand, gameSettings }) {
                       </span>
                     );
                   })}
-                  {guess.metaTags.cv_tags.map((tag, tagIndex) => (
-                    <span 
-                      key={tagIndex}
-                      className={`meta-tag ${guess.sharedCVs.includes(tag) ? 'shared' : ''}`}
-                    >
-                      {tag}
-                    </span>
-                  ))}
                   <span 
                     key={getShortTags(guess.metaTags, gameSettings).length}
                     className={`meta-tag expand-tag`}
                     onClick={() => onTagExpand(guess, guessIndex)}
                     style={{ color: '#0084B4', cursor: 'pointer' }}
                   >
-                    +{getAllTags(guess.metaTags).length - getShortTags(guess.metaTags, gameSettings).length - guess.metaTags.cv_tags.length}
+                    +{getAllTags(guess.metaTags).length - getShortTags(guess.metaTags, gameSettings).length}
                   </span>
                 </div>
               </td>

@@ -465,7 +465,7 @@ async function getRandomCharacter(gameSettings) {
   }
 }
 
-function generateFeedback(guess, answerCharacter) {
+function generateFeedback(guess, answerCharacter, gameSettings) {
   const result = {};
 
   result.gender = {
@@ -530,18 +530,10 @@ function generateFeedback(guess, answerCharacter) {
     feedback: appearancesFeedback
   };
 
-  // Advice from EST-NINE
-  const answerMetaTagsSet = new Set(getAllTags(answerCharacter.metaTags));
-  let sharedMetaTags = {}
-  for (const [tag_type, tags] of Object.entries(guess.metaTags)) {
-    sharedMetaTags[tag_type] = tags.filter(tag => answerMetaTagsSet.has(tag));
-  }
-  const sharedCVs = guess.metaTags.cv_tags.filter(tag => answerCharacter.metaTags.cv_tags.includes(tag));
-
   result.metaTags = {
     guess: getAllTags(guess.metaTags),
-    shared: sharedMetaTags,
-    sharedCVs: sharedCVs
+    shared: markSharedTags(guess.metaTags, answerCharacter.metaTags),
+    sharedShort: markSharedTags(getShortTagsObject(guess.metaTags, gameSettings), answerCharacter.metaTags)
   };
 
   if (guess.latestAppearance === -1 || answerCharacter.latestAppearance === -1) {
@@ -666,7 +658,7 @@ function getAllTags(allTags) {
   ]
 }
 
-function getShortTags(allTags, gameSettings) {
+function getShortTagsObject(allTags, gameSettings) {
   let {
     platform,
     region,
@@ -698,18 +690,41 @@ function getShortTags(allTags, gameSettings) {
   subject_tags = subject_tags.slice(0, Math.min(gameSettings.subjectTagNum, subject_tags.length))
   character_tags = character_tags.slice(0, Math.min(gameSettings.characterTagNum, character_tags.length))
 
-  return [
-    ...platform,
-    ...region,
-    ...source,
-    ...category,
-    ...genre,
-    ...meta_tags,
-    ...subject_tags,
-    ...character_tags,
-    // ...cv_tags, // special check for cv
-    ...added_tags
-  ]
+  return {
+    platform,
+    region,
+    source,
+    category,
+    genre,
+    meta_tags,
+    subject_tags,
+    character_tags,
+    cv_tags,
+    added_tags
+  }
+}
+
+function getShortTags(allTags, gameSettings) {
+  return getAllTags(getShortTagsObject(allTags, gameSettings))
+}
+
+function markSharedTags(guessTags, answerTags) {
+  const allAnswerTags = new Set(getAllTags(answerTags))
+  const sharedTags = {}
+
+  for (const [tag_type, tags] of Object.entries(guessTags)) {
+    sharedTags[tag_type] = tags.map(tag => ({
+      name: tag,
+      shared: allAnswerTags.has(tag)
+    }))
+  }
+
+  sharedTags.cv_tags = guessTags.cv_tags.map(tag => ({
+    name: tag,
+    shared: answerTags.cv_tags.includes(tag)
+  }))
+
+  return sharedTags
 }
 
 export {
@@ -723,5 +738,7 @@ export {
   searchSubjects,
   enableAuthorizedSearch,
   getAllTags,
+  getShortTagsObject,
   getShortTags,
+  markSharedTags,
 }; 

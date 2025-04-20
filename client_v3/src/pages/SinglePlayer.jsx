@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
-import { getRandomCharacter, getCharacterAppearances, generateFeedback, getLoginInfo, enableAuthorizedSearch, getAllTags } from '../utils/anime';
+import { getRandomCharacter, getCharacterAppearances, generateFeedback, getLoginInfo, enableAuthorizedSearch, getAllTags, getShortTags, getShortTagsObject, markSharedTags } from '../utils/anime';
 import SearchBar from '../components/SearchBar';
 import GuessesTable from '../components/GuessesTable';
 import SettingsPopup from '../components/SettingsPopup';
@@ -158,19 +158,19 @@ function SinglePlayer() {
             count: appearances.appearances.length
           },
           metaTags: guessData.metaTags,
-          sharedMetaTags: guessData.metaTags,
-          sharedCVs: guessData.metaTags.cv_tags,
+          sharedMetaTags: markSharedTags(guessData.metaTags, answerCharacter.metaTags),
+          sharedShortMetaTags: markSharedTags(getShortTagsObject(guessData.metaTags, gameSettings), answerCharacter.metaTags),
           isAnswer: true
         }]);
 
         setGameEnd(true);
-        alert('熟悉这个角色吗？欢迎贡献标签');
+        // alert('熟悉这个角色吗？欢迎贡献标签');
         setGameEndPopup({
           result: 'win',
           answer: answerCharacter
         });
       } else if (guessesLeft <= 1) {
-        const feedback = generateFeedback(guessData, answerCharacter);
+        const feedback = generateFeedback(guessData, answerCharacter, gameSettings);
         setGuesses(prevGuesses => [...prevGuesses, {
           icon: guessData.image,
           name: guessData.name,
@@ -190,7 +190,7 @@ function SinglePlayer() {
           sharedAppearances: feedback.shared_appearances,
           metaTags: guessData.metaTags,
           sharedMetaTags: feedback.metaTags.shared,
-          sharedCVs: feedback.metaTags.sharedCVs,
+          sharedShortMetaTags: feedback.metaTags.sharedShort,
           isAnswer: false
         }]);
 
@@ -201,7 +201,7 @@ function SinglePlayer() {
           answer: answerCharacter
         });
       } else {
-        const feedback = generateFeedback(guessData, answerCharacter);
+        const feedback = generateFeedback(guessData, answerCharacter, gameSettings);
         setGuesses(prevGuesses => [...prevGuesses, {
           icon: guessData.image,
           name: guessData.name,
@@ -221,7 +221,7 @@ function SinglePlayer() {
           sharedAppearances: feedback.shared_appearances,
           metaTags: guessData.metaTags,
           sharedMetaTags: feedback.metaTags.shared,
-          sharedCVs: feedback.metaTags.sharedCVs,
+          sharedShortMetaTags: feedback.metaTags.sharedShort,
           isAnswer: false
         }]);
       }

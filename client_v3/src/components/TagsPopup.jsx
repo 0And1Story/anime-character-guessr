@@ -15,14 +15,15 @@ function TagsPopup({ onClose, tagsPopupConfig }) {
         </div>
         <div className="popup-body">
           <div className="meta-tags-container">
-            {getAllTags(guess.metaTags).map((tag, tagIndex) => {
+            {Object.values(guess.sharedMetaTags).flat().map(({name, shared}, tagIndex) => {
+              const tag = name;
               const isExpandTag = tag === '展开';
               const tagKey = `${guessIndex}-${tagIndex}`;
               
               return (
                 <span 
                   key={tagIndex}
-                  className={`meta-tag ${getAllTags(guess.sharedMetaTags).includes(tag) ? 'shared' : ''} ${isExpandTag ? 'expand-tag' : ''}`}
+                  className={`meta-tag ${shared ? 'shared' : ''} ${isExpandTag ? 'expand-tag' : ''}`}
                   onClick={undefined}
                   style={isExpandTag ? { color: '#0084B4', cursor: 'pointer' } : undefined}
                 >

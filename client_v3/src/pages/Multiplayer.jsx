@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import { io } from 'socket.io-client';
-import { getRandomCharacter, getCharacterAppearances, generateFeedback, getLoginInfo, enableAuthorizedSearch } from '../utils/anime';
+import { getRandomCharacter, getCharacterAppearances, generateFeedback, getLoginInfo, enableAuthorizedSearch, markSharedTags, getShortTagsObject } from '../utils/anime';
 import SettingsPopup from '../components/SettingsPopup';
 import SearchBar from '../components/SearchBar';
 import GuessesTable from '../components/GuessesTable';
@@ -301,13 +301,14 @@ const Multiplayer = () => {
             count: appearances.appearances.length
           },
           metaTags: guessData.metaTags,
-          sharedMetaTags: guessData.metaTags,
+          sharedMetaTags: markSharedTags(guessData.metaTags, answerCharacter.metaTags),
+          sharedShortMetaTags: markSharedTags(getShortTagsObject(guessData.metaTags, gameSettings), answerCharacter.metaTags),
           isAnswer: true
         }]);
 
         handleGameEnd(true);
       } else if (guessesLeft <= 1) {
-        const feedback = generateFeedback(guessData, answerCharacter);
+        const feedback = generateFeedback(guessData, answerCharacter, gameSettings);
         setGuesses(prevGuesses => [...prevGuesses, {
           icon: guessData.image,
           name: guessData.name,
@@ -327,12 +328,13 @@ const Multiplayer = () => {
           sharedAppearances: feedback.shared_appearances,
           metaTags: guessData.metaTags,
           sharedMetaTags: feedback.metaTags.shared,
+          sharedShortMetaTags: feedback.metaTags.sharedShort,
           isAnswer: false
         }]);
 
         handleGameEnd(false);
       } else {
-        const feedback = generateFeedback(guessData, answerCharacter);
+        const feedback = generateFeedback(guessData, answerCharacter, gameSettings);
         setGuesses(prevGuesses => [...prevGuesses, {
           icon: guessData.image,
           name: guessData.name,
@@ -352,6 +354,7 @@ const Multiplayer = () => {
           sharedAppearances: feedback.shared_appearances,
           metaTags: guessData.metaTags,
           sharedMetaTags: feedback.metaTags.shared,
+          sharedShortMetaTags: feedback.metaTags.sharedShort,
           isAnswer: false
         }]);
       }
