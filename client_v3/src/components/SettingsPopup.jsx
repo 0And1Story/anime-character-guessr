@@ -256,6 +256,9 @@ function SettingsPopup({ gameSettings, onSettingsChange, onClose, onRestart, hid
                     await setIndex("");
                     onSettingsChange('enableHints', true);
                     onSettingsChange('includeGame', false);
+                    if (loginInfo?.access_token) {
+                      onSettingsChange('enableNSFW', true);
+                    }
                   }}
                 >
                   旮旯高手
