@@ -532,6 +532,7 @@ function SettingsPopup({ gameSettings, onSettingsChange, onClose, onRestart, hid
                       <option value="NTR">NTR</option>
                       <option value="同人">同人</option>
                       </>) : (<>
+                      <option value="">全部</option>
                       <option value="科幻">科幻</option>
                       <option value="喜剧">喜剧</option>
                       <option value="百合">百合</option>
