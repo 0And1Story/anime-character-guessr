@@ -16,6 +16,8 @@ function HelpPopup({ onClose }) {
               绿色高亮：正确或非常接近；黄色高亮：有点接近。<br/>
               “↑”表示；应该往高了猜；"↓"表示；应该往低了猜<br/>
               <br/>
+              支持Galgame的NSFW条目，需要在主界面登录Bangumi账号后，在游戏设置中开启。<br/>
+              <br/>
               有bug或者建议？欢迎B站私信我。
             </div>
           </div>
