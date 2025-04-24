@@ -471,7 +471,7 @@ function SettingsPopup({ gameSettings, onSettingsChange, onClose, onRestart, hid
                     </select>
                   </div>
                   <div className="filter-item">
-                    <label>来源：</label>
+                    <label>平台：</label>
                     <select 
                       className="settings-select"
                       value={gameSettings.metaTags[4] || ''}
@@ -484,14 +484,10 @@ function SettingsPopup({ gameSettings, onSettingsChange, onClose, onRestart, hid
                       disabled={true}
                     >
                       <option value="">全部</option>
-                      <option value="原创">原创</option>
-                      <option value="漫画改">漫画改</option>
-                      <option value="游戏改">游戏改</option>
-                      <option value="小说改">小说改</option>
                     </select>
                   </div>
                   <div className="filter-item">
-                    <label>类型：</label>
+                    <label>题材：</label>
                     <select 
                       className="settings-select"
                       value={gameSettings.metaTags[5] || ''}
@@ -503,7 +499,39 @@ function SettingsPopup({ gameSettings, onSettingsChange, onClose, onRestart, hid
                       }}
                       // disabled={gameSettings.useIndex}
                     >
+                      {gameSettings.metaTags[3] === "Galgame" ?
+                      (<>
                       <option value="">全部</option>
+                      <option value="废萌">废萌</option>
+                      <option value="剧情">剧情</option>
+                      <option value="氛围">氛围</option>
+                      <option value="悬疑">悬疑</option>
+                      <option value="科幻">科幻</option>
+                      <option value="哲学">哲学</option>
+                      <option value="轮回">轮回</option>
+                      <option value="艺术">艺术</option>
+                      <option value="奇幻">奇幻</option>
+                      <option value="治愈">治愈</option>
+                      <option value="致郁">致郁</option>
+                      <option value="百合">百合</option>
+                      <option value="纯爱">纯爱</option>
+                      <option value="推理">推理</option>
+                      <option value="猎奇">猎奇</option>
+                      <option value="克苏鲁">克苏鲁</option>
+                      <option value="机战">机战</option>
+                      <option value="战斗">战斗</option>
+                      <option value="校园">校园</option>
+                      <option value="恋爱">恋爱</option>
+                      <option value="催泪">催泪</option>
+                      <option value="魔法">魔法</option>
+                      <option value="末日">末日</option>
+                      <option value="战争">战争</option>
+                      <option value="恐怖">恐怖</option>
+                      <option value="伪娘">伪娘</option>
+                      <option value="女装">女装</option>
+                      <option value="NTR">NTR</option>
+                      <option value="同人">同人</option>
+                      </>) : (<>
                       <option value="科幻">科幻</option>
                       <option value="喜剧">喜剧</option>
                       <option value="百合">百合</option>
@@ -531,6 +559,8 @@ function SettingsPopup({ gameSettings, onSettingsChange, onClose, onRestart, hid
                       <option value="武侠">武侠</option>
                       <option value="美食">美食</option>
                       <option value="职场">职场</option>
+                      </>)
+                      }
                     </select>
                   </div>
                   <span className="tooltip-trigger">
