@@ -18,7 +18,7 @@ function SinglePlayer() {
   const [guesses, setGuesses] = useState([]);
   const [guessesLeft, setGuessesLeft] = useState(10);
   const [isGuessing, setIsGuessing] = useState(false);
-  const [gameEnd, setGameEnd] = useState(false);
+  const [gameEnd, setGameEnd] = useState(true);
   const [gameEndPopup, setGameEndPopup] = useState(null);
   const [answerCharacter, setAnswerCharacter] = useState(null);
   const [settingsPopup, setSettingsPopup] = useState(false);
@@ -97,6 +97,7 @@ function SinglePlayer() {
             first: hintTexts[0],
             second: hintTexts[1]
           });
+          setGameEnd(false);
           console.log('初始化游戏', gameSettings);
         }
       } catch (error) {
