@@ -13,6 +13,7 @@ function HomeNavigator() {
   const user_id = cookie.load('user_id')
   const isLogin = access_token && user_id
 
+  const [username, setUsername] = useState("")
   const [nickname, setNickname] = useState("")
   useEffect(() => {
     (async () => {
@@ -22,6 +23,7 @@ function HomeNavigator() {
             'Authorization': `Bearer ${access_token}`
           }
         })
+        if (response?.data?.username) setUsername(response.data.username)
         if (response?.data?.nickname) setNickname(response.data.nickname)
       }
     })()
@@ -38,7 +40,7 @@ function HomeNavigator() {
               window.location.reload()
             }
           }} rel="noopener noreferrer" className="social-link">
-            <img src={`https://api.bgm.tv/v0/users/${user_id}/avatar?type=small`} alt="Bangumi" className="bangumi-icon" />
+            <img src={`https://api.bgm.tv/v0/users/${username || user_id}/avatar?type=small`} alt="Bangumi" className="bangumi-icon" />
             <span>{nickname}</span>
           </button>
         ) : (
