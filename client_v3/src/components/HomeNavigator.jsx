@@ -15,6 +15,7 @@ function HomeNavigator() {
 
   const [username, setUsername] = useState("")
   const [nickname, setNickname] = useState("")
+  const [avatarUrl, setAvatarUrl] = useState("")
   useEffect(() => {
     (async () => {
       if (isLogin) {
@@ -25,6 +26,7 @@ function HomeNavigator() {
         })
         if (response?.data?.username) setUsername(response.data.username)
         if (response?.data?.nickname) setNickname(response.data.nickname)
+        if (response?.data?.avatar?.small) setAvatarUrl(response.data.avatar.small)
       }
     })()
   }, [nickname, isLogin, access_token])
@@ -40,7 +42,7 @@ function HomeNavigator() {
               window.location.reload()
             }
           }} rel="noopener noreferrer" className="social-link">
-            <img src={`https://api.bgm.tv/v0/users/${username || user_id}/avatar?type=small`} alt="Bangumi" className="bangumi-icon" />
+            <img src={avatarUrl || `https://api.bgm.tv/v0/users/${username || user_id}/avatar?type=small`} alt="Bangumi" className="bangumi-icon" />
             <span>{nickname}</span>
           </button>
         ) : (
